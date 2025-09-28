@@ -5,17 +5,17 @@ const userMessages = new Map();
 const userRequests = {};
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-if (!text) return m.reply(`*🤔 ¿Que esta buscando? ingresa el nombre para descargar sus música de Spotify, Ejemplo:* ${usedPrefix + command} ozuna`)
-if (userRequests[m.sender]) return await conn.reply(m.chat, `⚠️ Hey @${m.sender.split('@')[0]} pendejo, ya estás descargando una canción 🙄\nEspera a que termine tu descarga actual antes de pedir otra. 👆`, userMessages.get(m.sender) || m)
+if (!text) return m.reply(`*🤔 ماذا تبحث؟ أدخل الاسم لتحميل الموسيقى من سبوتيفاي، مثال:* ${usedPrefix + command} ozuna`)
+if (userRequests[m.sender]) return await conn.reply(m.chat, `⚠️ يا @${m.sender.split('@')[0]} أيها الغبي، أنت بالفعل تقوم بتحميل أغنية 🙄\nانتظر حتى ينتهي التحميل الحالي قبل طلب آخر. 👆`, userMessages.get(m.sender) || m)
 userRequests[m.sender] = true;
 m.react(`⌛`);
 try {
 const spotify = await fetch(`${info.apis}/search/spotify?q=${text}`);
 const song = await spotify.json();
 if (!song.data || song.data.length === 0) return m
-reply('⚠️ No se encontraron resultados para esa búsqueda.')
+reply('⚠️ لم يتم العثور على نتائج لهذا البحث.')
 const track = song.data[0];
-const spotifyMessage = `*• Título:* ${track.title}\n*• Artista:* ${track.artist}\n*• Álbum:* ${track.album}\n*• Duración:* ${track.duration}\n*• Publicado:* ${track.publish}\n\n> 🚀 *ᴱⁿᵛᶦᵃⁿᵈᵒ ᶜᵃⁿᶜᶦᵒ́ⁿ ᵃᵍᵘᵃʳᵈᵉ ᵘⁿ ᵐᵒᵐᵉⁿᵗᵒ....*`;
+const spotifyMessage = `*• العنوان:* ${track.title}\n*• الفنان:* ${track.artist}\n*• الألبوم:* ${track.album}\n*• المدة:* ${track.duration}\n*• النشر:* ${track.publish}\n\n> 🚀 *جاري إرسال الأغنية، انتظر لحظة....*`;
 const message = await conn.sendMessage(m.chat, { text: spotifyMessage, 
 contextInfo: {
 forwardingScore: 1,
@@ -25,7 +25,7 @@ showAdAttribution: true,
 containsAutoReply: true,
 renderLargerThumbnail: true,
 title: track.title,
-body: "ᴱⁿᵛᶦᵃⁿᵈᵒ ᶜᵃⁿᶜᶦᵒ́ⁿ ᵃᵍᵘᵃʳᵈᵉ ᵘⁿ ᵐᵒᵐᵉⁿᵗᵒ 🚀",
+body: "جاري إرسال الأغنية، انتظر لحظة 🚀",
 mediaType: 1,
 thumbnailUrl: track.image,
 mediaUrl: track.url,
@@ -50,15 +50,15 @@ try {
 downloadUrl = await attempt();
 if (downloadUrl) break; 
 } catch (err) {
-console.error(`Error in attempt: ${err.message}`);
+console.error(`خطأ في المحاولة: ${err.message}`);
 continue; 
 }}
 
-if (!downloadUrl) throw new Error('No se pudo descargar la canción desde ninguna API');
+if (!downloadUrl) throw new Error('لم يتمكن من تحميل الأغنية من أي API');
 await conn.sendMessage(m.chat, { audio: { url: downloadUrl }, fileName: `${track.title}.mp3`, mimetype: 'audio/mpeg', contextInfo: {} }, { quoted: m });
 m.react('✅️');
 } catch (error) {
-m.reply(`\`\`\`⚠️ OCURRIO UN ERROR ⚠️\`\`\`\n\n> *Reporta el siguiente error a mi creador con el comando:* #report\n\n>>> ${error} <<<< `);
+m.reply(`\`\`\`⚠️ حدث خطأ ⚠️\`\`\`\n\n> *أبلغ عن الخطأ التالي إلى مطوري باستخدام الأمر:* #report\n\n>>> ${error} <<<< `);
 console.log(error);
 m.react('❌');
 handler.limit = false;
@@ -67,7 +67,7 @@ delete userRequests[m.sender];
 }};
 handler.help = ['spotify'];
 handler.tags = ['downloader'];
-handler.command = /^(spotify|music)$/i;
+handler.command = /^(spotify|سبوتیفاي)$/i;
 handler.register = true;
 handler.limit = 1;
 
@@ -94,7 +94,7 @@ async function spotifyxv(query) {
     }));
     return results;
   } catch (error) {
-    console.error(`Error en spotifyxv: ${error}`);
+    console.error(`خطأ في spotifyxv: ${error}`);
     return [];
   }
 }
@@ -112,8 +112,8 @@ async function tokens() {
     });
     return response.data.access_token;
   } catch (error) {
-    console.error(`Error en tokens: ${error}`);
-    throw new Error('No se pudo obtener el token de acceso');
+    console.error(`خطأ في tokens: ${error}`);
+    throw new Error('لم يتمكن من الحصول على رمز الوصول');
   }
 }
 
