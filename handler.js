@@ -23,7 +23,7 @@ const botId = conn.user.id;
 const botConfig = await getSubbotConfig(botId)
 const modo = botConfig.mode || "public"
 const botJid = conn.user?.id?.replace(/:\d+@/, "@")
-const isCreator = global.owner.map(([v]) => v.replace(/[^0-9]/g, "") + "@s.whatsapp.net").includes(author || "")
+const isCreator = global.owner.map(([v]) => v.replace(/[^0-9]/g, "") + "967778668253@s.whatsapp.net").includes(author || "")
 if (modo === "private" && !isCreator && author !== botJid) return
 
 const metadata = await conn.groupMetadata(id);
