@@ -1,90 +1,194 @@
 import axios from 'axios';
-//import cheerio from 'cheerio';
-//import { search, download } from 'aptoide-scraper';
+
+// 🎨 الألوان والزخارف للنصوص
+const styles = {
+    bold: (text) => `*${text}*`,
+    italic: (text) => `_${text}_`,
+    mono: (text) => `\`\`\`${text}\`\`\``,
+    quote: (text) => `> ${text}`,
+    sparkle: (text) => `✨ ${text} ✨`,
+    rocket: (text) => `🚀 ${text} 🚀`,
+    warning: (text) => `⚠️ ${text} ⚠️`,
+    success: (text) => `✅ ${text} ✅`,
+    error: (text) => `❌ ${text} ❌`
+};
+
+// 🎭 تصميم البوكسات والحدود
+const boxes = {
+    header: (text) => `╔═══✦〖 ${text} 〗✦═══╗`,
+    body: (text) => `║ ${text}`,
+    footer: `╚═══════════════╝`,
+    divider: `├─────────────────┤`,
+    doubleLine: `╠═══════════════╣`,
+    singleLine: `╟───────────────╢`
+};
+
 const userMessages = new Map();
 const userRequests = {};
 
 const handler = async (m, { conn, usedPrefix, command, text }) => {
-const apkpureApi = 'https://apkpure.com/api/v2/search?q=';
-const apkpureDownloadApi = 'https://apkpure.com/api/v2/download?id=';
-if (!text) return m.reply(`⚠️ *𝙀𝙨𝙘𝙧𝙞𝙗𝙖 𝙚𝙡 𝙣𝙤𝙢𝙗𝙧𝙚 𝙙𝙚𝙡 𝘼𝙋𝙆*`)
-if (userRequests[m.sender]) return await conn.reply(m.chat, `⚠️ Hey @${m.sender.split('@')[0]} pendejo, ya estás descargando un APK 🙄\nEspera a que termine tu descarga actual antes de pedir otra. 👆`, userMessages.get(m.sender) || m)
-userRequests[m.sender] = true;
-m.react("⌛");
-try {
-const downloadAttempts = [async () => {
-const res = await fetch(`https://api.dorratz.com/v2/apk-dl?text=${text}`);
-const data = await res.json();
-if (!data.name) throw new Error('No data from dorratz API');
-return { name: data.name, package: data.package, lastUpdate: data.lastUpdate, size: data.size, icon: data.icon, dllink: data.dllink };
-},
-async () => {
-const res = await fetch(`${info.apis}/download/apk?query=${text}`);
-const data = await res.json();
-const apkData = data.data;
-return { name: apkData.name, developer: apkData.developer, publish: apkData.publish, size: apkData.size, icon: apkData.image, dllink: apkData.download };
-},
-async () => {
-const searchA = await search(text);
-const data5 = await download(searchA[0].id);
-return { name: data5.name, package: data5.package, lastUpdate: data5.lastup, size: data5.size, icon: data5.icon, dllink: data5.dllink };
-}];
+    const apkpureApi = 'https://apkpure.com/api/v2/search?q=';
+    const apkpureDownloadApi = 'https://apkpure.com/api/v2/download?id=';
+    
+    // 🎯 التحقق من وجود النص
+    if (!text) {
+        const errorMessage = `
+${boxes.header('خطـأ في الإدخـال')}
+${boxes.body('⚠️ يرجى كتابة اسم التطبيق الذي تريد تحميله')}
+${boxes.body('')}
+${boxes.body('📝 مثال للاستخدام:')}
+${boxes.body(styles.mono(`${usedPrefix + command} واتساب`))}
+${boxes.footer}`;
+        
+        return m.reply(styles.bold(errorMessage));
+    }
+    
+    // 🚫 التحقق من الطلبات المتزامنة
+    if (userRequests[m.sender]) {
+        const busyMessage = `
+${boxes.header('طلب تحت المعالجة')}
+${boxes.body(`🕒 يا ${styles.bold(`@${m.sender.split('@')[0]}`)}، لديك طلب قيد التنفيذ`)}
+${boxes.body('')}
+${boxes.body('📥 انتظر حتى انتهاء التحميل الحالي')}
+${boxes.body('قبل تقديم طلب جديد...')}
+${boxes.footer}`;
+        
+        return await conn.reply(m.chat, styles.bold(busyMessage), userMessages.get(m.sender) || m);
+    }
+    
+    userRequests[m.sender] = true;
+    m.react("🎯");
 
-let apkData = null;
-for (const attempt of downloadAttempts) {
-try {
-apkData = await attempt();
-if (apkData) break; 
-} catch (err) {
-console.error(`Error in attempt: ${err.message}`);
-continue; // Si falla, intentar con la siguiente API
-}}
+    try {
+        // 🔄 محاولات التحميل من واجهات متعددة
+        const downloadAttempts = [
+            async () => {
+                const res = await fetch(`https://api.dorratz.com/v2/apk-dl?text=${text}`);
+                const data = await res.json();
+                if (!data.name) throw new Error('لا توجد بيانات من واجهة dorratz');
+                return { 
+                    name: data.name, 
+                    package: data.package, 
+                    lastUpdate: data.lastUpdate, 
+                    size: data.size, 
+                    icon: data.icon, 
+                    dllink: data.dllink 
+                };
+            },
+            async () => {
+                const res = await fetch(`${info.apis}/download/apk?query=${text}`);
+                const data = await res.json();
+                const apkData = data.data;
+                return { 
+                    name: apkData.name, 
+                    developer: apkData.developer, 
+                    publish: apkData.publish, 
+                    size: apkData.size, 
+                    icon: apkData.image, 
+                    dllink: apkData.download 
+                };
+            }
+        ];
 
-if (!apkData) throw new Error('No se pudo descargar el APK desde ninguna API');
-const response = `≪ＤＥＳＣＡＲＧＡＤＯ ＡＰＫＳ🚀≫
+        let apkData = null;
+        
+        // 🔁 تجربة جميع الواجهات
+        for (const [index, attempt] of downloadAttempts.entries()) {
+            try {
+                m.react(["🔄", "⚡", "🔍"][index]);
+                apkData = await attempt();
+                if (apkData) break;
+            } catch (err) {
+                console.error(`🔄 خطأ في المحاولة ${index + 1}: ${err.message}`);
+                continue;
+            }
+        }
 
-┏━━━━━━━━━━━━━━━━━━━━━━• 
-┃💫 𝙉𝙊𝙈𝘽𝙍𝙀: ${apkData.name}
-${apkData.developer ? `┃👤 𝘿𝙀𝙎𝘼𝙍𝙍𝙊𝙇𝙇𝙊: ${apkData.developer}` : `┃📦 𝙋𝘼𝘾𝙆𝘼𝙂𝙀: ${apkData.package}`}
-┃🕒 𝙐𝙇𝙏𝙄𝙈𝘼 𝘼𝘾𝙏𝙐𝙇𝙄𝙕𝘼𝘾𝙄𝙊𝙉: ${apkData.developer ? apkData.publish : apkData.lastUpdate}
-┃💪 𝙋𝙀𝙎𝙊: ${apkData.size}
-┗━━━━━━━━━━━━━━━━━━━━━━━•
+        if (!apkData) throw new Error('❌ تعذر العثور على التطبيق');
 
-> *⏳ ᴱˢᵖᵉʳᵉ ᵘⁿ ᵐᵒᵐᵉⁿᵗᵒ ˢᵘˢ ᵃᵖᵏ ˢᵉ ᵉˢᵗᵃ ᵉⁿᵛᶦᵃⁿᵈᵒ...*`;
-const responseMessage = await conn.sendFile(m.chat, apkData.icon, 'apk.jpg', response, m);
-userMessages.set(m.sender, responseMessage);
+        // 🎨 تصميم رسالة المعلومات
+        const response = `
+${boxes.header('معلومات التطبيق 📱')}
+${boxes.body(`🎯 ${styles.bold('الاسم:')} ${apkData.name}`)}
+${boxes.divider}
+${apkData.developer ? 
+    boxes.body(`👨‍💻 ${styles.bold('المطور:')} ${apkData.developer}`) : 
+    boxes.body(`📦 ${styles.bold('الحزمة:')} ${apkData.package}`)}
+${boxes.body(`📅 ${styles.bold('آخر تحديث:')} ${apkData.developer ? apkData.publish : apkData.lastUpdate}`)}
+${boxes.body(`💾 ${styles.bold('الحجم:')} ${styles.sparkle(apkData.size)}`)}
+${boxes.doubleLine}
+${boxes.body(styles.quote('⏳ جاري تجهيز التطبيق...'))}
+${boxes.footer}`;
 
-const apkSize = apkData.size.toLowerCase();
-if (apkSize.includes('gb') || (apkSize.includes('mb') && parseFloat(apkSize) > 999)) {
-await m.reply('*⚠️ 𝙀𝙡 𝙖𝙥𝙠 𝙚𝙨 𝙢𝙪𝙮 𝙥𝙚𝙨𝙖𝙙𝙤.*');
-return;
-}
+        // 📤 إرسال المعلومات والصورة
+        const responseMessage = await conn.sendFile(m.chat, apkData.icon, 'apk.jpg', styles.bold(response), m);
+        userMessages.set(m.sender, responseMessage);
 
-await conn.sendMessage(m.chat, { document: { url: apkData.dllink }, mimetype: 'application/vnd.android.package-archive', fileName: `${apkData.name}.apk`, caption: null }, { quoted: m });
-m.react("✅");
-} catch (e) {
-m.react('❌');
-console.log(e);
-handler.limit = false;
-} finally {
-delete userRequests[m.sender];
-}};
-handler.help = ['apk', 'apkmod'];
-handler.tags = ['downloader'];
-handler.command = /^(apkmod|apk|modapk|dapk2|aptoide|aptoidedl)$/i;
+        // ⚠️ فحص حجم التطبيق
+        const apkSize = apkData.size.toLowerCase();
+        if (apkSize.includes('gb') || (apkSize.includes('mb') && parseFloat(apkSize) > 999)) {
+            const sizeWarning = `
+${boxes.header('تحذير الحجم ⚠️')}
+${boxes.body('📦 التطبيق كبير جداً وقد يستغرق')}
+${boxes.body('وقتاً طويلاً في التحميل')}
+${boxes.body('')}
+${boxes.body('💡 ننصح بالاتصال بشبكة Wi-Fi')}
+${boxes.footer}`;
+            
+            await m.reply(styles.bold(sizeWarning));
+        }
+
+        // 🎉 إرسال التطبيق
+        m.react("📤");
+        await conn.sendMessage(m.chat, { 
+            document: { url: apkData.dllink }, 
+            mimetype: 'application/vnd.android.package-archive', 
+            fileName: `${apkData.name}.apk`, 
+            caption: null 
+        }, { quoted: m });
+        
+        m.react("🎉");
+
+    } catch (e) {
+        // 🚨 معالجة الأخطاء
+        const errorMessage = `
+${boxes.header('خطـأ في التحميـل 🚨')}
+${boxes.body('❌ تعذر العثور على التطبيق')}
+${boxes.body('')}
+${boxes.body('💡 حاول استخدام اسم آخر')}
+${boxes.body('أو تحقق من تهجئة الاسم')}
+${boxes.footer}`;
+        
+        await m.reply(styles.bold(errorMessage));
+        m.react('🚨');
+        console.log('🔄 الخطأ:', e);
+        handler.limit = false;
+    } finally {
+        delete userRequests[m.sender];
+    }
+};
+
+// 🏷️ معلومات الأوامر
+handler.help = ['apk', 'apkmod'].map(cmd => styles.sparkle(cmd));
+handler.tags = ['downloader'].map(tag => styles.italic(tag));
+handler.command = /^(apkmod|apk|modapk|dapk2|aptoide|تطبيق)$/i;
 handler.register = true;
 handler.limit = 2;
 
 export default handler;
 
+// 🔍 وظائف مساعدة
 async function searchApk(text) {
-  const response = await axios.get(`${apkpureApi}${encodeURIComponent(text)}`);
-  const data = response.data;
-  return data.results;
+    const response = await axios.get(`${apkpureApi}${encodeURIComponent(text)}`);
+    const data = response.data;
+    return data.results;
 }
 
 async function downloadApk(id) {
-  const response = await axios.get(`${apkpureDownloadApi}${id}`);
-  const data = response.data;
-  return data;
+    const response = await axios.get(`${apkpureDownloadApi}${id}`);
+    const data = response.data;
+    return data;
 }
+
+// 🌟 تصدير الأنماط للاستخدام الخارجي
+export { styles, boxes };
