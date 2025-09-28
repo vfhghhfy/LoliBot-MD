@@ -2,7 +2,7 @@ import { generateWAMessageFromContent } from "@whiskeysockets/baileys"
 import * as fs from 'fs'
 
 var handler = async (m, { conn, text, participants, isOwner, usedPrefix, command, isAdmin }) => {
-if (!m.quoted && !text) return m.reply(`𝙔 𝙀𝙇 𝙏𝙀𝙓𝙏𝙊?`) 
+if (!m.quoted && !text) return m.reply(`وأين النص؟`) 
 let users = participants.map(u => conn.decodeJid(u.id))
 if (m.quoted && m.quoted.message) {
 const type = Object.keys(m.quoted.message)[0]
@@ -20,13 +20,13 @@ if (text) msg.caption = text
 } else if (type === 'audioMessage') {
 msg.audio = mediax
 msg.ptt = true
-msg.fileName = 'Hidetag.mp3'
+msg.fileName = 'إشارة.mp3'
 msg.mimetype = 'audio/mp4'
 } else if (type === 'stickerMessage') {
 msg.sticker = mediax
 } else if (type === 'documentMessage') {
 msg.document = mediax
-msg.fileName = m.quoted.fileName || 'archivo'
+msg.fileName = m.quoted.fileName || 'ملف'
 msg.mimetype = m.quoted.mimetype || 'application/octet-stream'
 }
 await conn.sendMessage(m.chat, msg, { quoted: null })
@@ -57,7 +57,7 @@ console.error(e)
 }}
 handler.help = ['hidetag']
 handler.tags = ['group']
-handler.command = /^(hidetag|notificar|notify)$/i
+handler.command = /^(hidetag|notificar|notify|إشعار|منشن)$/i
 handler.group = true
 handler.admin = true
 handler.register = true 
