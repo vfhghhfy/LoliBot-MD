@@ -2,21 +2,21 @@ import { sticker } from '../lib/sticker.js'
 import fetch from 'node-fetch'
 
 const actions = {
-  lick: { e: '👅', v: 'lamió a', nsfw: false, aliases: [] },
-  bite: { e: '🧛‍♂️', v: 'mordió a', nsfw: false, aliases: [] },
-  blush: { e: '😳', v: 'se sonrojó junto a', nsfw: false, aliases: [] },
-  cuddle: { e: '🥰', v: 'se acurrucó con', nsfw: false, aliases: [] },
-  handhold: { e: '🤝', v: 'tomó de la mano a', nsfw: false, aliases: [] },
-  highfive: { e: '✋', v: 'chocó los cinco con', nsfw: false, aliases: [] },
-  poke: { e: '👉', v: 'hizo poke a', nsfw: false, aliases: [] },
-  smile: { e: '😊', v: 'sonrió a', nsfw: false, aliases: [] },
-  wave: { e: '👋', v: 'saludó a', nsfw: false, aliases: [] },
-  nom: { e: '🍪', v: 'le dio un nom a', nsfw: false, aliases: [] },
-  dance: { e: '💃', v: 'bailó con', nsfw: false, aliases: [] },
-  wink: { e: '😉', v: 'guiñó a', nsfw: false, aliases: [] },
-  happy: { e: '😁', v: 'está feliz con', nsfw: false, aliases: [] },
-  smug: { e: '😏', v: 'miró con soberbia a', nsfw: false, aliases: [] },
-  blowjob: { e: '😳', v: 'le hizo oral a', nsfw: true, aliases: ['oral'] }
+  lick: { e: '👅', v: 'لحس', nsfw: false, aliases: [] },
+  bite: { e: '🧛‍♂️', v: 'عض', nsfw: false, aliases: [] },
+  blush: { e: '😳', v: 'إحمر خجلاً بجانب', nsfw: false, aliases: [] },
+  cuddle: { e: '🥰', v: 'احتضن', nsfw: false, aliases: [] },
+  handhold: { e: '🤝', v: 'أمسك يد', nsfw: false, aliases: [] },
+  highfive: { e: '✋', v: 'صافح', nsfw: false, aliases: [] },
+  poke: { e: '👉', v: 'نقر', nsfw: false, aliases: [] },
+  smile: { e: '😊', v: 'ابتسم لـ', nsfw: false, aliases: [] },
+  wave: { e: '👋', v: 'حيا', nsfw: false, aliases: [] },
+  nom: { e: '🍪', v: 'أعطى قطعة حلوى لـ', nsfw: false, aliases: [] },
+  dance: { e: '💃', v: 'رقص مع', nsfw: false, aliases: [] },
+  wink: { e: '😉', v: 'غمز', nsfw: false, aliases: [] },
+  happy: { e: '😁', v: 'يشعر بالسعادة مع', nsfw: false, aliases: [] },
+  smug: { e: '😏', v: 'نظر بتعالٍ لـ', nsfw: false, aliases: [] },
+  blowjob: { e: '😳', v: 'قام بعمل جنسي فموي لـ', nsfw: true, aliases: ['oral'] }
 }
 
 const actionByCommand = Object.entries(actions).reduce((map, [k, v]) => {
@@ -32,9 +32,9 @@ if (!m.mentionedJid.length) m.mentionedJid.push(m.sender)
 const getName = async jid => (await conn.getName(jid).catch(() => null)) || `+${jid.split('@')[0]}`
 const senderName = await getName(m.sender)
 
-const mentionedNames = await Promise.all(m.mentionedJid.map(async u => u === m.sender ? 'alguien' : await getName(u)))
+const mentionedNames = await Promise.all(m.mentionedJid.map(async u => u === m.sender ? 'شخص ما' : await getName(u)))
 
-const act = actionByCommand[command.toLowerCase()] || { e: '✨', v: 'hizo magia con', nsfw: false, main: command.toLowerCase() }
+const act = actionByCommand[command.toLowerCase()] || { e: '✨', v: 'قام بسحر مع', nsfw: false, main: command.toLowerCase() }
 const texto = `${act.e} ${senderName} ${act.v} ${mentionedNames.join(', ')}`
 const tipo = act.nsfw ? 'nsfw' : 'sfw'
 const endpoint = act.main
@@ -50,8 +50,8 @@ return
 const gifBuffer = await fetch(url).then(r => r.buffer())
 await conn.sendMessage(m.chat, { video: gifBuffer, gifPlayback: true, caption: texto, mentions: m.mentionedJid }, { quoted: m })
 } catch (e) {
-console.error(`[❌ ERROR ${command}]`, e)
-await conn.reply(m.chat, `❌ Ocurrió un error con *${command}*.`, m)
+console.error(`[❌ خطأ في ${command}]`, e)
+await conn.reply(m.chat, `❌ حدث خطأ في أمر *${command}*.`, m)
 }}
 handler.help    = Object.keys(actions).flatMap(k => [k, ...(actions[k].aliases || [])])
 handler.tags    = ['sticker']
