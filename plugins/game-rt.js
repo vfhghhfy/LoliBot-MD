@@ -6,29 +6,39 @@ const user = res.rows[0];
 const lastWait = Number(user?.wait) || 0;
 const remaining = lastWait + cooldown - now;
 
-if (remaining > 0) return conn.fakeReply(m.chat, `*🕓 Calma crack 🤚, Espera ${msToTime(remaining)} antes de volver a usar el comando*`, m.sender, `ᴺᵒ ʰᵃᵍᵃⁿ ˢᵖᵃᵐ`, 'status@broadcast');
-if (args.length < 2) return conn.reply(m.chat, `⚠️ Formato incorrecto. Usa: ${usedPrefix + command} <color> <cantidad>\n\nEjemplo: ${usedPrefix + command} black 100`, m);
+if (remaining > 0) return conn.fakeReply(m.chat, `*🕓 تمهل يا بطل 🤚، انتظر ${msToTime(remaining)} قبل استخدام الأمر مرة أخرى*`, m.sender, `لا تُزعج`, 'status@broadcast');
+if (args.length < 2) return conn.reply(m.chat, `⚠️ تنسيق غير صحيح. استخدم: ${usedPrefix + command} <لون> <مبلغ>\n\nمثال: ${usedPrefix + command} أحمر 100`, m);
 const color = args[0].toLowerCase();
 const betAmount = parseInt(args[1]);
-if (!['red', 'black', 'green'].includes(color)) return conn.reply(m.chat, '🎯 Color no válido. Usa: "red", "black" o "green".', m);
-if (isNaN(betAmount) || betAmount <= 0) return conn.reply(m.chat, '❌ La cantidad debe ser un número positivo.', m);
-if (user.exp < betAmount) return conn.reply(m.chat, `❌ No tienes suficiente XP para apostar. Tienes *${formatExp(user.exp)} XP*`, m);
+
+// تحويل الألوان العربية
+const colorTraducido = traducirColor(color);
+if (!['red', 'black', 'green', 'أحمر', 'أسود', 'أخضر'].includes(colorTraducido)) return conn.reply(m.chat, '🎯 لون غير صالح. استخدم: "أحمر"، "أسود" أو "أخضر".', m);
+if (isNaN(betAmount) || betAmount <= 0) return conn.reply(m.chat, '❌ يجب أن يكون المبلغ رقمًا موجبًا.', m);
+if (user.exp < betAmount) return conn.reply(m.chat, `❌ ليس لديك خبرة كافية للمراهنة. لديك *${formatExp(user.exp)} XP*`, m);
 
 const resultColor = getRandomColor();
-const isWin = resultColor === color;
+const isWin = resultColor === colorTraducido;
 let winAmount = 0;
 
 if (isWin) {
-winAmount = color === 'green' ? betAmount * 14 : betAmount * 2;
+winAmount = colorTraducido === 'green' ? betAmount * 14 : betAmount * 2;
 }
 
 const newExp = user.exp - betAmount + winAmount;
 await m.db.query(`UPDATE usuarios SET exp = $1, wait = $2 WHERE id = $3`, [newExp, now, m.sender]);
-return conn.reply(m.chat, `😱 La ruleta cayó en *${resultColor}*\n${isWin ? `🎉 ¡Ganaste *${formatExp(winAmount)} XP*!` : `💀 Perdiste *${formatExp(betAmount)} XP*`}`, m);
+
+// تحويل النتيجة للعربية للعرض
+const resultColorTraducido = traducirColorParaMostrar(resultColor);
+const colorApostadoTraducido = traducirColorParaMostrar(colorTraducido);
+
+return conn.reply(m.chat, `😱 سقطت الروليت على *${resultColorTraducido}*\n${isWin ? `🎉 ربحت *${formatExp(winAmount)} XP*!` : `💀 خسرت *${formatExp(betAmount)} XP*`}`, m);
 };
-handler.help = ['rt <color> <cantidad>'];
-handler.tags = ['game'];
-handler.command = ['rt'];
+
+// الأوامر العربية المضافة
+handler.help = ['rt <color> <cantidad>', 'روليت <لون> <مبلغ>', 'روله <لون> <مبلغ>'];
+handler.tags = ['game', 'القمار', 'الألعاب'];
+handler.command = ['rt', 'روليت', 'روله', 'ruleta'];
 handler.register = true;
 
 export default handler;
@@ -46,9 +56,35 @@ function formatExp(amount) {
 }
 
 function msToTime(duration) {
-  if (isNaN(duration) || duration <= 0) return '0s';
+  if (isNaN(duration) || duration <= 0) return '0ث';
   const totalSeconds = Math.floor(duration / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
-  return `${minutes > 0 ? minutes + 'm ' : ''}${seconds}s`;
+  return `${minutes > 0 ? minutes + 'د ' : ''}${seconds}ث`;
 }
+
+// دالة لترجمة الألوان من العربية
+function traducirColor(color) {
+  const traducciones = {
+    'أحمر': 'red',
+    'احمر': 'red',
+    'أسود': 'black', 
+    'اسود': 'black',
+    'أخضر': 'green',
+    'اخضر': 'green',
+    'red': 'red',
+    'black': 'black',
+    'green': 'green'
+  };
+  return traducciones[color] || color;
+}
+
+// دالة لترجمة الألوان للعرض
+function traducirColorParaMostrar(color) {
+  const traducciones = {
+    'red': 'أحمر 🔴',
+    'black': 'أسود ⚫', 
+    'green': 'أخضر 🟢'
+  };
+  return traducciones[color] || color;
+    }
