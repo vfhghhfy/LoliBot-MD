@@ -15,6 +15,7 @@ const pluginsFolder = path.join(__dirname, "plugins");
 const processedMessages = new Set();
 const lastDbUpdate = new Map();
 const groupMetaCache = new Map(); 
+
 export async function participantsUpdate(conn, { id, participants, action, author }) {
 try {
 if (!id || !Array.isArray(participants) || !action) return;
@@ -28,7 +29,7 @@ if (modo === "private" && !isCreator && author !== botJid) return
 
 const metadata = await conn.groupMetadata(id);
 groupMetaCache.set(id, metadata);
-const groupName = metadata.subject || "Grupo"
+const groupName = metadata.subject || "المجموعة"
 const botJidClean = (conn.user?.id || "").replace(/:\d+/, "")
 const botLidClean = (conn.user?.lid || "").replace(/:\d+/, "")
 
@@ -51,19 +52,19 @@ const pp = "./media/Menu1.jpg"
 
 for (const participant of participants) {
 if (!participant || typeof participant !== 'string' || !participant.includes('@')) continue;
-const userTag = typeof participant === 'string' && participant.includes('@') ? `@${participant.split("@")[0]}` : "@usuario"
-const authorTag = typeof author === 'string' && author.includes('@') ? `@${author.split("@")[0]}` : "alguien"
+const userTag = typeof participant === 'string' && participant.includes('@') ? `@${participant.split("@")[0]}` : "@مستخدم"
+const authorTag = typeof author === 'string' && author.includes('@') ? `@${author.split("@")[0]}` : "شخص ما"
 
 if (action === "add" && settings.antifake) {
 const phoneNumber = participant.split("@")[0]
 const isFake = arabicCountryCodes.some(code => phoneNumber.startsWith(code.slice(1)))
 
 if (isFake && isBotAdmin) {
-await conn.sendMessage(id, { text: `⚠️ ${userTag} fue eliminado automáticamente por *número no permitido*`, mentions: [participant] })
+await conn.sendMessage(id, { text: `⚠️ ${userTag} تمت إزالته تلقائياً بسبب *رقم غير مسموح*`, mentions: [participant] })
 await conn.groupParticipantsUpdate(id, [participant], "remove")    
 continue
 } else if (isFake && !isBotAdmin) {
-//await conn.sendMessage(id, { text: `⚠️ ${userTag} tiene un número prohibido, pero no tengo admin para eliminarlo.`, mentions: [participant] })
+//await conn.sendMessage(id, { text: `⚠️ ${userTag} لديه رقم محظور، لكن ليس لدي صلاحية المشرف لإزالته.`, mentions: [participant] })
 continue 
 }}
 
@@ -77,8 +78,8 @@ image = pp
 switch (action) {
 case "add":
 if (settings.welcome) {
-const groupDesc = metadata.desc || "*ᴜɴ ɢʀᴜᴘᴏ ɢᴇɴɪᴀ😸*\n *sɪɴ ʀᴇɢʟᴀ 😉*"
-const raw = settings.swelcome || `HOLAA!! @user ¿COMO ESTAS?😃\n\n『Bienvenido A *@group*』\n\nUn gusto conocerte amig@ 🤗\n\n_Recuerda leer las reglas del grupo para no tener ningun problema 🧐_\n\n*Solo disfrutar de este grupo y divertite 🥳*`
+const groupDesc = metadata.desc || "*مَجْمُوْعَةٌ رَائِعَةٌ 😸*\n *بِدُونِ قَوَاعِد 😉*"
+const raw = settings.swelcome || `مرحباً!! @user كيف حالك؟ 😃\n\n『أهلاً بك في *@group*』\n\nسعيد بلقياك صديقي 🤗\n\n_تذكر قراءة قواعد المجموعة لتجنب أي مشاكل 🧐_\n\n*فقط استمتع في هذه المجموعة واستمتع بوقتك 🥳*`
 const msg = raw
 .replace(/@user/gi, userTag)
 .replace(/@group|@subject/gi, groupName)
@@ -110,8 +111,8 @@ mediaType: 2,
 showAdAttribution: false,
 renderLargerThumbnail: false,
 thumbnailUrl: image,
-title: "🌟 WELCOME 🌟",
-body: "Bienvenido al grupo 🤗",
+title: "🌟 أهلاً وسهلاً 🌟",
+body: "مرحباً بك في المجموعة 🤗",
 containsAutoReply: true,
 sourceUrl: "https://skyultraplus.com"
 }}}, { quoted: null })
@@ -126,14 +127,14 @@ const botJid = (conn.user?.id || "").replace(/:\d+/, "");
 if (participant.replace(/:\d+/, "") === botJid) {
 await db.query(`UPDATE chats SET joined = false
       WHERE id = $1 AND bot_id = $2`, [id, botJid]);
-console.log(`[DEBUG] El bot fue eliminado del grupo ${id}. Marcado como 'joined = false'.`);
+console.log(`[DEBUG] تم إزالة البوت من المجموعة ${id}. تم تعيين 'joined = false'.`);
 }} catch (err) {
-console.error("❌ Error en 'remove':", err);
+console.error("❌ خطأ في 'remove':", err);
 }
           
 if (settings.welcome && conn?.user?.jid !== globalThis?.conn?.user?.jid) {
-const groupDesc = metadata.desc || "Sin descripción"
-const raw = settings.sbye || `Bueno, se fue @user 👋\n\nQue dios lo bendiga 😎`
+const groupDesc = metadata.desc || "بدون وصف"
+const raw = settings.sbye || `حسناً، لقد غادر @user 👋\n\nبارك الله فيه 😎`
 const msg = raw
 .replace(/@user/gi, userTag)
 .replace(/@group/gi, groupName)
@@ -163,8 +164,8 @@ externalAdReply: {
 showAdAttribution: true,
 renderLargerThumbnail: true,
 thumbnailUrl: image,
-title: "👋 BYE",
-body: "Se fue un gay",
+title: "👋 مع السلامة",
+body: "غادر شخص",
 containsAutoReply: true,
 mediaType: 1,
 sourceUrl: "https://skyultraplus.com"
@@ -174,7 +175,7 @@ break
 
 case "promote": case "daradmin": case "darpoder":
 if (settings.detect) {
-const raw = settings.sPromote || `@user 𝘼𝙃𝙊𝙍𝘼 𝙀𝙎 𝘼𝘿𝙈𝙄𝙉 𝙀𝙉 𝙀𝙎𝙏𝙀 𝙂𝙍𝙐𝙋𝙊\n\n😼🫵𝘼𝘾𝘾𝙄𝙊𝙉 𝙍𝙀𝘼𝙇𝙄𝙕𝘼𝘿𝘼 𝙋𝙊𝙍: @author`
+const raw = settings.sPromote || `@user الآن أصبح مشرفاً في هذه المجموعة\n\n😼🫵تمت العملية بواسطة: @author`
 const msg = raw
   .replace(/@user/gi, userTag)
   .replace(/@group/gi, groupName)
@@ -193,8 +194,8 @@ mediaUrl: [info.nna, info.nna2, info.md].getRandom(),
 mediaType: 2,
 showAdAttribution: false,  
 renderLargerThumbnail: false,  
-title: "NUEVO ADMINS 🥳",
-body: "Weon eres admin portante mal 😉",
+title: "مشرف جديد 🥳",
+body: "أنت الآن مشرف تصرف بمسؤولية 😉",
 containsAutoReply: true,  
 thumbnailUrl: image,
 sourceUrl: "skyultraplus.com"
@@ -204,7 +205,7 @@ break
 
 case "demote": case "quitaradmin": case "quitarpoder":
 if (settings.detect) {
-const raw = settings.sDemote || `@user 𝘿𝙀𝙅𝘼 𝘿𝙀 𝙎𝙀𝙍 𝘼𝘿𝙈𝙄𝙉 𝙀𝙉 𝙀𝙎𝙏𝙀 𝙂𝙍𝙐𝙋𝙊\n\n😼🫵𝘼𝘾𝘾𝙄𝙊𝙉 𝙍𝙀𝘼𝙇𝙄𝙕𝘼𝘿𝘼 𝙋𝙊𝙍: @author`
+const raw = settings.sDemote || `@user لم يعد مشرفاً في هذه المجموعة\n\n😼🫵تمت العملية بواسطة: @author`
 const msg = raw
   .replace(/@user/gi, userTag)
   .replace(/@group/gi, groupName)
@@ -223,8 +224,8 @@ mediaUrl: [info.nna, info.nna2, info.md].getRandom(),
 mediaType: 2,
 showAdAttribution: false,  
 renderLargerThumbnail: false,  
-title: "📛 UN ADMINS MENOS",
-body: "Jjjj Ya no eres admin 😹",
+title: "📛 مشرف أقل",
+body: "هاها لم تعد مشرفاً 😹",
 containsAutoReply: true,  
 mediaType: 1,   
 thumbnailUrl: image,
@@ -234,7 +235,7 @@ sourceUrl: "skyultraplus.com"
 break
 }}
 } catch (err) {
-console.error(chalk.red(`❌ Error en participantsUpdate - Acción: ${action} | Grupo: ${id}`), err);
+console.error(chalk.red(`❌ خطأ في participantsUpdate - الإجراء: ${action} | المجموعة: ${id}`), err);
 }
 }
 
@@ -255,16 +256,16 @@ antifake: false
 if (modo === "private" && !isCreator) return;
 const metadata = await conn.groupMetadata(id);
 groupMetaCache.set(id, metadata);
-const groupName = subject || metadata.subject || "Grupo";
+const groupName = subject || metadata.subject || "المجموعة";
 const isBotAdmin = metadata.participants.some(p => p.id.includes(botJid) && p.admin);
 
 let message = "";
 if (subject) {
-message = `El nombre del grupo ha cambiado a *${groupName}*.`;
+message = `تم تغيير اسم المجموعة إلى *${groupName}*.`;
 } else if (desc) {
-message = `La descripción del grupo *${groupName}* ha sido actualizada, nueva descripción:\n\n${metadata.desc || "Sin descripción"}`;
+message = `تم تحديث وصف المجموعة *${groupName}*, الوصف الجديد:\n\n${metadata.desc || "بدون وصف"}`;
 } else if (picture) {
-message = `La foto del grupo *${groupName}* ha sido actualizada.`;
+message = `تم تحديث صورة المجموعة *${groupName}*.`;
 }
 
 if (message && settings.detect) {
@@ -279,7 +280,7 @@ serverMessageId: 1
 }}
 });
 }} catch (err) {
-console.error(chalk.red("❌ Error en groupsUpdate:"), err);
+console.error(chalk.red("❌ خطأ في groupsUpdate:"), err);
 }
 }
 
@@ -289,7 +290,7 @@ const callerId = call.from;
 const userTag = `@${callerId.split("@")[0]}`;
 const botConfig = await getSubbotConfig(conn.user?.id);
 if (!botConfig.anti_call) return;
-await conn.sendMessage(callerId, { text: `🚫 Está prohibido hacer llamadas, serás bloqueado...`,
+await conn.sendMessage(callerId, { text: `🚫 ممنوع إجراء المكالمات، سيتم حظرك...`,
 contextInfo: {
 isForwarded: true,
 forwardingScore: 1,
@@ -301,7 +302,7 @@ serverMessageId: 1
 });
 await conn.updateBlockStatus(callerId, "block");
 } catch (err) {
-console.error(chalk.red("❌ Error en callUpdate:"), err);
+console.error(chalk.red("❌ خطأ في callUpdate:"), err);
 }
 }
 
@@ -326,7 +327,7 @@ console.error(err);
 
 const botConfig = await getSubbotConfig(botId)
 const isMainBot = conn === globalThis.conn;
-const botType = isMainBot ? "oficial" : "subbot";
+const botType = isMainBot ? "رسمي" : "فرعي";
 if (botConfig.tipo !== botType) {
 await db.query(`UPDATE subbots SET tipo = $1 WHERE id = $2`, [botType, botId.replace(/:\d+/, "")]);
 }
@@ -368,12 +369,12 @@ if (processedMessages.has(hash)) return;
 processedMessages.add(hash);
 setTimeout(() => processedMessages.delete(hash), 60_000);
 
-//contador 
+//عداد الرسائل
 if (m.isGroup && m.sender !== conn.user?.id.replace(/:\d+@/, "@")) {
 const key = `${m.sender}|${chatId}`;
 const now = Date.now();
 const last = lastDbUpdate.get(key) || 0;
-if (now - last > 9000) { //9 seg
+if (now - last > 9000) { //9 ثواني
 lastDbUpdate.set(key, now);
 db.query(`INSERT INTO messages (user_id, group_id, message_count)
       VALUES ($1, $2, 1)
@@ -381,7 +382,7 @@ db.query(`INSERT INTO messages (user_id, group_id, message_count)
       DO UPDATE SET message_count = messages.message_count + 1`, [m.sender, chatId]).catch(console.error);
 }}
 
-//antifake
+//مكافحة الأرقام المزورة
 if (m.isGroup && m.sender && m.sender.endsWith("@s.whatsapp.net")) {
 try {
 const settings = (await db.query("SELECT antifake FROM group_settings WHERE group_id = $1", [chatId])).rows[0];
@@ -399,7 +400,7 @@ return (id === botJid || id === (conn.user?.lid || "").replace(/:\d+/, "")) && (
 });
 
 if (isBotAdmin) {
-await conn.sendMessage(chatId, { text: `⚠️ @${phoneNumber} En este grupo no está permitido el ingreso de números con prefijos prohibidos, será expulsado...`, mentions: [m.sender]});
+await conn.sendMessage(chatId, { text: `⚠️ @${phoneNumber} في هذه المجموعة غير مسموح بدخول الأرقام ذات الرموز المحظورة، سيتم طرده...`, mentions: [m.sender]});
 await conn.groupParticipantsUpdate(chatId, [m.sender], "remove");
 return;
 }}}
@@ -486,7 +487,7 @@ if (m.isGroup && !isCreator && senderJid !== botJid) {
 try {
 const res = await db.query('SELECT banned, primary_bot FROM group_settings WHERE group_id = $1', [chatId]);
     
-if (res.rows[0]?.banned) return; // grupo baneado
+if (res.rows[0]?.banned) return; // مجموعة محظورة
 
 const primaryBot = res.rows[0]?.primary_bot;
 if (primaryBot && !m?.isAdmin) {
@@ -508,7 +509,7 @@ try {
 const rawJid = m.key?.participantAlt || m.key?.participant || m.key?.remoteJid || null;
 const isValido = typeof rawJid === 'string' && /^\d+@(s\.whatsapp\.net|lid)$/.test(rawJid);
 const num = isValido ? rawJid.split('@')[0] : null;
-const userName = m.pushName || 'sin name';
+const userName = m.pushName || 'بدون اسم';
 
 if (m.key?.participantAlt && m.key.participantAlt.endsWith('@s.whatsapp.net')) {
 m.sender = m.key.participantAlt;
@@ -531,7 +532,7 @@ await db.query('UPDATE usuarios SET lid = NULL WHERE lid = $1 AND id <> $2', [m.
 await db.query('UPDATE usuarios SET lid = $1 WHERE id = $2', [m.key.senderLid, m.sender]);
 m.lid = m.key.senderLid;
 } catch (e) {
-console.error("❌ Error actualizando lid en handler:", e);
+console.error("❌ خطأ في تحديث lid في handler:", e);
 }}
 } catch (err) {
 console.error(err);
@@ -619,7 +620,7 @@ modoAdminActivo = result.rows[0]?.modoadmin || false;
 console.error(err);
 }
 
-//if ((plugin.admin || plugin.Botadmin) && !isGroup) return m.reply("⚠️ Estos es un grupo?, este comando solo funciona el grupo");
+//if ((plugin.admin || plugin.Botadmin) && !isGroup) return m.reply("⚠️ هل هذه مجموعة؟ هذا الأمر يعمل فقط في المجموعات");
 
 if (plugin.tags?.includes('nsfw') && m.isGroup) {
 const { rows } = await db.query('SELECT modohorny, nsfw_horario FROM group_settings WHERE group_id = $1', [chatId])
@@ -633,14 +634,14 @@ const dentro = ini <= fin ? (hhmm >= ini && hhmm <= fin) : (hhmm >= ini || hhmm 
 if (!modohorny || !dentro) {
 const stickerUrls = ['https://qu.ax/bXMB.webp', 'https://qu.ax/TxtQ.webp']
 try {
-await conn.sendFile(chatId, stickerUrls.getRandom(), 'desactivado.webp', '', m, true, { contextInfo: { forwardingScore: 200, isForwarded: false, externalAdReply: { showAdAttribution: false, title: modohorny ? `ᴱˢᵗᵉ ᶜᵒᵐᵃⁿᵈᵒ ˢᵒˡᵒ ᶠᵘⁿᶜᶦᵒⁿᵃ ᵉⁿ ʰᵒʳᵃʳᶦᵒ ʰᵃᵇᶦˡᶦᵗᵃᵈᵒ:` : `ᴸᵒˢ ᶜᵒᵐᵃⁿᵈᵒ ˢ ʰᵒʳⁿʸ ᵉˢᵗᵃⁿ ᵈᵉˢᵃᶜᵗᶦᵛᵃᵈᵒˢ:`, body: modohorny ? `${ini} a ${fin}` : '#enable modohorny', mediaType: 2, sourceUrl: info.md, thumbnail: m.pp }}}, { quoted: m, ephemeralExpiration: 24 * 60 * 100, disappearingMessagesInChat: 24 * 60 * 100 })
+await conn.sendFile(chatId, stickerUrls.getRandom(), 'desactivado.webp', '', m, true, { contextInfo: { forwardingScore: 200, isForwarded: false, externalAdReply: { showAdAttribution: false, title: modohorny ? `هذا الأمر يعمل فقط في الوقت المسموح:` : `أوامر NSFW معطلة:`, body: modohorny ? `${ini} إلى ${fin}` : '#enable modohorny', mediaType: 2, sourceUrl: info.md, thumbnail: m.pp }}}, { quoted: m, ephemeralExpiration: 24 * 60 * 100, disappearingMessagesInChat: 24 * 60 * 100 })
 } catch (e) {
-await conn.sendMessage(chatId, { text: modohorny ? `🔞 NSFW fuera del horario permitido (${ini} a ${fin})` : '🔞 El NSFW está desactivado por un admin.\nUsa *#enable modohorny* para activarlo.', contextInfo: { externalAdReply: { title: 'NSFW Desactivado', body: modohorny ? `Horario permitido: ${ini} a ${fin}` : '#enable modohorny', mediaType: 2, thumbnail: m.pp, sourceUrl: info.md }}}, { quoted: m })
+await conn.sendMessage(chatId, { text: modohorny ? `🔞 NSFW خارج الوقت المسموح (${ini} إلى ${fin})` : '🔞 NSFW معطل من قبل المشرف.\nاستخدم *#enable modohorny* لتفعيله.', contextInfo: { externalAdReply: { title: 'NSFW معطل', body: modohorny ? `الوقت المسموح: ${ini} إلى ${fin}` : '#enable modohorny', mediaType: 2, thumbnail: m.pp, sourceUrl: info.md }}}, { quoted: m })
 }
 continue
 }}
 
-//User banear
+//حظر المستخدم
 try {
 let rawSender = m.sender || m.key?.participant || "";
 let senderId;
@@ -661,12 +662,12 @@ if (avisos < 3) {
 const nuevoAviso = avisos + 1;
 await db.query("UPDATE usuarios SET avisos_ban = $2 WHERE id = $1", [senderId, nuevoAviso]);
 const razon = resBan.rows[0]?.razon_ban?.trim() || "Spam";
-await conn.sendMessage(m.chat, { text: `⚠️ ESTAS BANEADO ⚠️\n*• Motivo:* ${razon} (avisos: ${nuevoAviso}/3)\n*👉🏻 Puedes contactar al propietario del Bot si crees que se trata de un error o para charlar sobre tu desbaneo*\n\n👉 ${info.fb}`, contextInfo: { mentionedJid: [senderId] }}, { quoted: m });
+await conn.sendMessage(m.chat, { text: `⚠️ أنت محظور ⚠️\n*• السبب:* ${razon} (إنذارات: ${nuevoAviso}/3)\n*👉🏻 يمكنك التواصل مع مالك البوت إذا كنت تعتقد أن هذا خطأ أو لمناقشة فك الحظر*\n\n👉 ${info.fb}`, contextInfo: { mentionedJid: [senderId] }}, { quoted: m });
 }
 return;
 }}
 } catch (e) {
-console.error("❌ Error al verificar baneo:", e);
+console.error("❌ خطأ في التحقق من الحظر:", e);
 }
 
 if (plugin.admin || plugin.botAdmin) {
@@ -681,17 +682,17 @@ console.log(isAdmin)
 console.error(e);
 }}
 
-if (plugin.owner && !isOwner) return m.reply("⚠️ Tu que? no eres mi propietario para venir a dame orden 🙄, solo el dueño del sub-bot o el owner puede usar este comando.");
-if (plugin.rowner && !isROwner) return m.reply("⚠️ Tu que? no eres mi propietario para venir a dame orden 🙄.");
-if (plugin.admin && !isAdmin) return m.reply("🤨 No eres admins. Solo los admins pueden usar este comando.");
-if (plugin.botAdmin && !isBotAdmin) return m.reply(`⚠️ haz admin al Bot "YO" para poder usar este comando.`);
-if (plugin.group && !isGroup) return m.reply("⚠️ Estos es un grupo?, este comando solo funciona el grupo");
-if (plugin.private && isGroup) return m.reply("⚠️ Este comando solo funciona el pv");
+if (plugin.owner && !isOwner) return m.reply("⚠️ مالكي؟ أنت لست مالكي لتأتي وتعطيني أوامر 🙄، فقط مالك البوت الفرعي أو المالك يمكنه استخدام هذا الأمر.");
+if (plugin.rowner && !isROwner) return m.reply("⚠️ مالكي؟ أنت لست مالكي لتأتي وتعطيني أوامر 🙄.");
+if (plugin.admin && !isAdmin) return m.reply("🤨 أنت لست مشرفاً. فقط المشرفون يمكنهم استخدام هذا الأمر.");
+if (plugin.botAdmin && !isBotAdmin) return m.reply(`⚠️ قم برفع البوت "أنا" كمشرف لاستخدام هذا الأمر.`);
+if (plugin.group && !isGroup) return m.reply("⚠️ هل هذه مجموعة؟ هذا الأمر يعمل فقط في المجموعات");
+if (plugin.private && isGroup) return m.reply("⚠️ هذا الأمر يعمل فقط في الخاص");
 if (plugin.register) {
 try {
 const result = await db.query('SELECT * FROM usuarios WHERE id = $1', [m.sender]);
 const user = result.rows[0];
-if (!user || user.registered !== true) return m.reply("「NO ESTAS REGISTRADO」\n\nPA NO APARECES EN MI BASE DE DATOS ✋🥸🤚\n\nPara poder usarme escribe el siguente comando\n\nComando: #reg nombre.edad\nEjemplo: #reg elrebelde.21");
+if (!user || user.registered !== true) return m.reply("「أنت غير مسجل」\n\nلم تظهر في قاعدة البيانات الخاصة بي ✋🥸🤚\n\nلتتمكن من استخدامي اكتب الأمر التالي\n\nالأمر: #reg الاسم.العمر\nمثال: #reg محمد.21");
 } catch (e) {
 console.error(e);
 }}
@@ -701,12 +702,12 @@ const res = await db.query('SELECT limite FROM usuarios WHERE id = $1', [m.sende
 const limite = res.rows[0]?.limite ?? 0;
 
 if (limite < plugin.limit) {
-await m.reply("*⚠ 𝐒𝐮𝐬 𝐝𝐢𝐚𝐦𝐚𝐧𝐭𝐞 💎 𝐬𝐞 𝐡𝐚𝐧 𝐚𝐠𝐨𝐭𝐚𝐝𝐨 𝐩𝐮𝐞𝐝𝐞 𝐜𝐨𝐦𝐩𝐫𝐚𝐫 𝐦𝐚𝐬 𝐮𝐬𝐚𝐧𝐝𝐨 𝐞𝐥 𝐜𝐨𝐦𝐚𝐧𝐝𝐨:* #buy.");
+await m.reply("*⚠️ لقد نفذت الماسات 💎 الخاصة بك، يمكنك شراء المزيد باستخدام الأمر:* #buy.");
 return;
 }
 
 await db.query('UPDATE usuarios SET limite = limite - $1 WHERE id = $2', [plugin.limit, m.sender]);
-await m.reply(`*${plugin.limit} diamante 💎 usado${plugin.limit > 1 ? 's' : ''}.*`);
+await m.reply(`*تم استخدام ${plugin.limit} ماسة 💎${plugin.limit > 1 ? '' : ''}.*`);
 }
 
 if (plugin.money) {
@@ -715,11 +716,11 @@ const res = await db.query('SELECT money FROM usuarios WHERE id = $1', [m.sender
 const money = res.rows[0]?.money ?? 0
 
 if (money < plugin.money) {
-return m.reply("*NO TIENE SUFICIENTES LOLICOINS 🪙*")
+return m.reply("*ليس لديك ما يكفي من LoliCoins 🪙*")
 }
 
 await db.query('UPDATE usuarios SET money = money - $1 WHERE id = $2', [plugin.money, m.sender])
-await m.reply(`*${plugin.money} LoliCoins usado${plugin.money > 1 ? 's' : ''} 🪙*`)
+await m.reply(`*تم استخدام ${plugin.money} LoliCoins ${plugin.money > 1 ? '' : ''} 🪙*`)
 } catch (err) {
 console.error(err)
 }}
@@ -730,14 +731,14 @@ const result = await db.query('SELECT level FROM usuarios WHERE id = $1', [m.sen
 const nivel = result.rows[0]?.level ?? 0;
 
 if (nivel < plugin.level) {
-return m.reply(`*⚠️ 𝐍𝐞𝐜𝐞𝐬𝐢𝐭𝐚 𝐞𝐥 𝐧𝐢𝐯𝐞𝐥 ${plugin.level}, 𝐩𝐚𝐫𝐚 𝐩𝐨𝐝𝐞𝐫 𝐮𝐬𝐚𝐫 𝐞𝐬𝐭𝐞 𝐜𝐨𝐦𝐚𝐧𝐝𝐨, 𝐓𝐮 𝐧𝐢𝐯𝐞𝐥 𝐚𝐜𝐭𝐮𝐚𝐥 𝐞𝐬:* ${nivel}`);
+return m.reply(`*⚠️ تحتاج إلى المستوى ${plugin.level} لاستخدام هذا الأمر، مستواك الحالي هو:* ${nivel}`);
 }} catch (err) {
 console.error(err);
 }}
 
 if (modoAdminActivo && !isAdmin && !isOwner) {
 return !0
-//m.reply("⚠️ Este grupo tiene *modo admin* activado. Solo los administradores pueden usar comandos.");
+//m.reply("⚠️ هذه المجموعة لديها *وضع المشرف* مفعل. فقط المشرفون يمكنهم استخدام الأوامر.");
 }
 
 try {
@@ -766,12 +767,12 @@ await db.query(`INSERT INTO stats (command, count)
   `, [command]);
 
 } catch (err) {
-console.error(chalk.red(`❌ Error al ejecutar ${handler.command}: ${err}`));
-m.reply("❌ Error ejecutando el comando, reporte este error a mi creador con el comando: /report\n\n" + err);
+console.error(chalk.red(`❌ خطأ في تنفيذ ${handler.command}: ${err}`));
+m.reply("❌ خطأ في تنفيذ الأمر، أبلغ عن هذا الخطأ إلى منشئي باستخدام الأمر: /report\n\n" + err);
 }}
 }
 
-//auto-leave
+//مغادرة تلقائية
 setInterval(async () => {
 try {
 let conn = global.conn || globalThis.conn;
@@ -780,17 +781,17 @@ const { rows } = await db.query("SELECT group_id, expired FROM group_settings WH
 
 for (let { group_id } of rows) {
 try {
-await conn.sendMessage(group_id, { text: [`*${conn.user.name}*,ᴹᵉ ᵛᵒʸ ᵈᵉˡ ᵉˡ ᵍʳᵘᵖᵒ ᶠᵘᵉ ᵘⁿ ᵍᵘˢᵗᵒ ᵉˢᵗᵃ ᵃᵠᵘᶦ́ ˢᶦ ᵠᵘᶦᵉʳᵉˢ ᵠᵘᵉ ᵛᵘᵉˡᵛᵃ ᵁˢᵉʳ ᵈᵉ ⁿᵘᵉᵛᵒ ᵉˡ ᶜᵒᵐᵃⁿᵈᵒ`, `Bueno me voy de este grupo de mrd, no me agregue a grupo ptm`, `*${conn.user.name}*, me voy de este grupito culiado nada interesante yo queria ver teta y son puro gays aca 🤣`].getRandom() });
+await conn.sendMessage(group_id, { text: [`*${conn.user.name}*, أنا أغادر المجموعة كان من دواعي سروري أن أكون هنا، إذا أردت أن أعود استخدم الأمر`, `حسناً، أنا أغادر هذه المجموعة السيئة، لا تضيفني إلى مجموعات`, `*${conn.user.name}*, أنا أغادر هذه المجموعة التافهة لا شيء مثير للاهتمام هنا 🤣`].getRandom() });
 await new Promise(r => setTimeout(r, 3000));
 await conn.groupLeave(group_id);
 await db.query("UPDATE group_settings SET expired = NULL WHERE group_id = $1", [group_id]);
-console.log(`[AUTO-LEAVE] Bot salió automáticamente del grupo: ${group_id}`);
+console.log(`[AUTO-LEAVE] البوت غادر المجموعة تلقائياً: ${group_id}`);
 } catch (e) {
 }}
 } catch (e) {
-}}, 60_000); //1 min
+}}, 60_000); //1 دقيقة
 
-//report
+//نظام التقارير
 setInterval(async () => {
 const MODGROUP_ID = "120363392819528942@g.us";
 try {
@@ -806,15 +807,15 @@ const res = await db.query("SELECT * FROM reportes WHERE enviado = false ORDER B
 if (!res.rows.length) return;
 
 for (const row of res.rows) {
-let cabecera = row.tipo === "sugerencia" ? "🌟 *SUGERENCIA*" : "ＲＥＰＯＲＴＥ";
-const txt = `┏╼╾╼⧼⧼⧼ ${cabecera}  ⧽⧽⧽╼╼╼┓\n╏• *Usuario:* wa.me/${row.sender_id.split("@")[0]}\n╏• ${row.tipo === "sugerencia" ? "*Sugerencia:*" : "*Mensaje:*"} ${row.mensaje}\n┗╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼`;
+let cabecera = row.tipo === "sugerencia" ? "🌟 *اقتراح*" : "تقرير";
+const txt = `┏╼╾╼⧼⧼⧼ ${cabecera}  ⧽⧽⧽╼╼╼┓\n╏• *المستخدم:* wa.me/${row.sender_id.split("@")[0]}\n╏• ${row.tipo === "sugerencia" ? "*الاقتراح:*" : "*الرسالة:*"} ${row.mensaje}\n┗╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼`;
 await conn.sendMessage(MODGROUP_ID, { text: txt });
 await db.query("DELETE FROM reportes WHERE id = $1", [row.id]);
 }} catch (err) {
 console.error("[REPORT/SUGGE SYSTEM ERROR]", err);
-}}, 60_000 * 2); // cada 2 minutos
+}}, 60_000 * 2); // كل دقيقتين
 
-//cache message 
+//تنظيف الذاكرة المؤقتة
 setInterval(async () => {
 try {
 const { rows } = await db.query(`SELECT chat_memory.chat_id, chat_memory.updated_at, 
@@ -827,21 +828,21 @@ const { rows } = await db.query(`SELECT chat_memory.chat_id, chat_memory.updated
 const now = Date.now();
 for (const row of rows) {
 const { chat_id, updated_at, memory_ttl } = row;
-const lastUpdated = new Date(updated_at).getTime(); // en ms
+const lastUpdated = new Date(updated_at).getTime(); // بالمللي ثانية
 const ttl = memory_ttl * 1000; 
 
 if (now - lastUpdated > ttl) {
 await db.query("DELETE FROM chat_memory WHERE chat_id = $1", [chat_id]);
-console.log(`🧹 Memoria del grupo ${chat_id} eliminada automáticamente`);
+console.log(`🧹 تم مسح ذاكرة المجموعة ${chat_id} تلقائياً`);
 }}
 } catch (err) {
-console.error("❌ Error limpiando memorias expiradas:", err);
-}}, 300_000); // cada 5 minutos
+console.error("❌ خطأ في تنظيف الذاكرة المؤقتة:", err);
+}}, 300_000); // كل 5 دقائق
 
 //---
 let file = fileURLToPath(import.meta.url);
 watchFile(file, () => {
   unwatchFile(file);
-  console.log(chalk.redBright('Update \'handler.js\''));
+  console.log(chalk.redBright('تم تحديث ملف \'handler.js\''));
   import(`${file}?update=${Date.now()}`);
 });
