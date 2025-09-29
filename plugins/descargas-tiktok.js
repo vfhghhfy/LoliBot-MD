@@ -5,15 +5,15 @@ import cheerio from 'cheerio';
 const userRequests = {};
 
 const handler = async (m, { conn, text, args, usedPrefix, command }) => {
-if (!text) return m.reply( `⚠️ *Que tiktok buscar? 🤔*\n\n⚡ *Ingrese un enlace de tiktok para descarga el video*\n*Ej:* ${usedPrefix + command} https://vm.tiktok.com/ZM6T4X1RY/`)
-if (!/(?:https:?\/{2})?(?:w{3}|vm|vt|t)?\.?tiktok.com\/([^\s&]+)/gi.test(text)) return m.reply(`❌ Error`)
-if (userRequests[m.sender]) return await conn.reply(m.chat, `Oye @${m.sender.split('@')[0]}, calma bro, ya estás descargando algo 😒\n> Espera a que termine tu solicitud actual antes de hacer otra...`, m)
+if (!text) return m.reply( `⚠️ *أي فيديو تبحث عنه في تيك توك؟ 🤔*\n\n⚡ *أدخل رابط فيديو تيك توك لتحميله*\n*مثال:* ${usedPrefix + command} https://vm.tiktok.com/ZM6T4X1RY/`)
+if (!/(?:https:?\/{2})?(?:w{3}|vm|vt|t)?\.?tiktok.com\/([^\s&]+)/gi.test(text)) return m.reply(`❌ خطأ في الرابط`)
+if (userRequests[m.sender]) return await conn.reply(m.chat, `يا @${m.sender.split('@')[0]}، اهدأ يا أخي، أنت بالفعل تقوم بتحميل شيء 😒\n> انتظر حتى تنتهي طلبك الحالي قبل تقديم طلب آخر...`, m)
 userRequests[m.sender] = true;
-const { key } = await conn.sendMessage(m.chat, { text: `⌛ 𝙀𝙨𝙥𝙚𝙧𝙚 ✋\n▰▰▰▱▱▱▱▱▱\n𝙔𝙖 𝙚𝙨𝙩𝙤𝙮 𝙙𝙚𝙨𝙘𝙖𝙧𝙜𝙖𝙙𝙤... 𝙨𝙪𝙨 𝙫𝙞𝙙𝙚𝙤 𝙙𝙚𝙡 𝙏𝙞𝙠𝙏𝙤𝙠 🔰` }, { quoted: m });
+const { key } = await conn.sendMessage(m.chat, { text: `⌛ انتظر ✋\n▰▰▰▱▱▱▱▱▱\nأنا أقوم بتحميل... فيديو التيك توك الخاص بك 🔰` }, { quoted: m });
 await delay(1000);
-await conn.sendMessage(m.chat, { text: `⌛ 𝙀𝙨𝙥𝙚𝙧𝙚 ✋ \n▰▰▰▰▰▱▱▱▱\n𝙔𝙖 𝙚𝙨𝙩𝙤𝙮 𝙙𝙚𝙨𝙘𝙖𝙧𝙜𝙖𝙙𝙤... 𝙨𝙪𝙨 𝙫𝙞𝙙𝙚𝙤 𝙙𝙚𝙡 𝙏𝙞𝙠𝙏𝙤𝙠 🔰`, edit: key });
+await conn.sendMessage(m.chat, { text: `⌛ انتظر ✋ \n▰▰▰▰▰▱▱▱▱\nأنا أقوم بتحميل... فيديو التيك توك الخاص بك 🔰`, edit: key });
 await delay(1000);
-await conn.sendMessage(m.chat, { text: `⌛ 𝙔𝙖 𝙘𝙖𝙨𝙞 🏃‍♂️💨\n▰▰▰▰▰▰▰▱▱`, edit: key });
+await conn.sendMessage(m.chat, { text: `⌛ لقد كاد أن ينتهي 🏃‍♂️💨\n▰▰▰▰▰▰▰▱▱`, edit: key });
 try {
 const downloadAttempts = [async () => {
 const tTiktok = await tiktokdlF(args[0]);
@@ -39,14 +39,14 @@ try {
 videoUrl = await attempt();
 if (videoUrl) break; 
 } catch (err) {
-console.error(`Error in attempt: ${err.message}`);
-continue; // Si falla, intentar con la siguiente API
+console.error(`خطأ في المحاولة: ${err.message}`);
+continue; // إذا فشلت، جرب مع API التالية
 }}
 
-if (!videoUrl) throw new Error('No se pudo descargar el video desde ninguna API');
-await conn.sendFile(m.chat, videoUrl, 'tt.mp4', '*🔰 Aqui esta tu video de tiktok*', m);
-//conn.sendMessage(m.chat, {video: { url: videoUrl }, caption: `*🔰 Aqui esta tu video de tiktok*` }, { quoted: m });
-await conn.sendMessage(m.chat, { text: `✅ 𝘾𝙤𝙢𝙥𝙡𝙚𝙩𝙖𝙙𝙤\n▰▰▰▰▰▰▰▰▰`, edit: key });
+if (!videoUrl) throw new Error('لم يتمكن من تحميل الفيديو من أي API');
+await conn.sendFile(m.chat, videoUrl, 'tt.mp4', '*🔰 ها هو فيديو التيك توك الخاص بك*', m);
+//conn.sendMessage(m.chat, {video: { url: videoUrl }, caption: `*🔰 ها هو فيديو التيك توك الخاص بك*` }, { quoted: m });
+await conn.sendMessage(m.chat, { text: `✅ اكتمل التحميل\n▰▰▰▰▰▰▰▰▰`, edit: key });
 } catch (e) {
 console.log(e);
 m.react(`❌`);
@@ -56,7 +56,7 @@ delete userRequests[m.sender];
 }};
 handler.help = ['tiktok'];
 handler.tags = ['downloader'];
-handler.command = /^(tt|tiktok)(dl|nowm)?$/i;
+handler.command = /^(tt|تيك-توك)(dl|nowm)?$/i;
 handler.limit = 1;
 
 export default handler;
@@ -64,7 +64,7 @@ export default handler;
 const delay = time => new Promise(res => setTimeout(res, time));
 
 async function tiktokdlF(url) {
-  if (!/tiktok/.test(url)) throw new Error(`*• Ejemplo:* _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`);
+  if (!/tiktok/.test(url)) throw new Error(`*• مثال:* _${usedPrefix + command} https://vm.tiktok.com/ZM686Q4ER/_`);
   const gettoken = await axios.get('https://tikdown.org/id');
   const $ = cheerio.load(gettoken.data);
   const token = $('#download-form > input[type=hidden]:nth-child(2)').attr('value');
