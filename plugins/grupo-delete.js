@@ -1,6 +1,6 @@
 let handler = async (m, { conn, args, usedPrefix, command }) => {
 
-if (!m.quoted && !m.mentionedJid?.length && !args[0]) return m.reply(`⚠️ Responde al mensaje que quiere eliminar pelotudito.`) 
+if (!m.quoted && !m.mentionedJid?.length && !args[0]) return m.reply(`⚠️ رد على الرسالة التي تريد حذفها.`) 
 try {
 if (m.quoted) {
 let delet = m.quoted.sender;
@@ -14,7 +14,7 @@ target = m.mentionedJid[0];
 } else if (args[0] && args[0].startsWith('+')) {
 target = args[0].replace(/[^0-9]/g, '') + '@s.whatsapp.net';
 } else {
-return m.reply(`⚠️ Mencionar a alguien o responder a un mensaje.`);
+return m.reply(`⚠️ ضع علامة على شخص أو رد على رسالة.`);
 }
 
 let chats = await conn.chats[m.chat]?.messages || [];
@@ -22,7 +22,7 @@ let messagesToDelete = Object.values(chats).filter(
 msg => (msg.key.participant === target || msg.key.remoteJid === target));
 
 if (!messagesToDelete.length) return 
-let totalToDelete = Math.min(messagesToDelete.length, 200); // Máximo 200 mensajes
+let totalToDelete = Math.min(messagesToDelete.length, 200); // الحد الأقصى 200 رسالة
 let deletedCount = 0;
 
 for (let i = 0; i < totalToDelete; i++) {
@@ -34,13 +34,15 @@ await delay(100);
 } catch (err) {
 console.log(err);
 }}
-m.reply(`✅ Se eliminaron ${deletedCount} mensajes de ${target.includes('@s.whatsapp.net')}.`);
+m.reply(`✅ تم حذف ${deletedCount} رسالة من ${target.includes('@s.whatsapp.net')}.`);
 } catch (err) {
 console.error(err);
 }};
-handler.help = ['delete *@user*'];
-handler.tags = ['group'];
-handler.command = /^del(ete)?$/i;
+
+// الأوامر العربية المضافة
+handler.help = ['delete *@user*', 'حذف *@مستخدم*', 'مسح *@مستخدم*'];
+handler.tags = ['group', 'المجموعة'];
+handler.command = /^del(ete)?|حذف|مسح$/i;
 handler.group = true; 
 handler.admin = true; 
 handler.botAdmin = true; 
