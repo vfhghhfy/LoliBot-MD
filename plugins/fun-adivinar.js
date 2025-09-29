@@ -11,21 +11,21 @@ const preguntasUsadas = new Set();
 
 const archivosRespaldo = {
   acertijo: "acertijo.json",
-  pelicula: "peliculas.json",
+  pelicula: "peliculas.json", 
   trivia: "trivia.json"
 };
 
 async function obtenerPregunta(tipo) {
   const prompt = {
-    acertijo: "Genera un acertijo con su respuesta en formato JSON: {\"question\": \"<pregunta>\", \"response\": \"<respuesta>\"}.",
-    pelicula: "Genera un juego de adivinar película con emojis como pista, formato JSON: {\"question\": \"<pregunta>\", \"response\": \"<respuesta>\"}.",
-    trivia: "Genera una trivia en formato JSON: {\"question\": \"<pregunta>\\n\\nA) ...\\nB) ...\\nC) ...\", \"response\": \"<letra correcta>\"}."
+    acertijo: "أنشئ لغزًا مع إجابته بتنسيق JSON: {\"question\": \"<السؤال>\", \"response\": \"<الإجابة>\"}.",
+    pelicula: "أنشئ لعبة تخمين فيلم باستخدام الرموز التعبيرة كدليل، بتنسيق JSON: {\"question\": \"<السؤال>\", \"response\": \"<الإجابة>\"}.",
+    trivia: "أنشئ سؤال trivia بتنسيق JSON: {\"question\": \"<السؤال>\\n\\nA) ...\\nB) ...\\nC) ...\", \"response\": \"<الحرف الصحيح>\"}."
   }[tipo];
 
   for (let i = 0; i < 6; i++) {
     try {
       const res = await fetch(`https://api.neoxr.eu/api/gptweb?text=${encodeURIComponent(prompt)}&apikey=russellxz`);
-      if (!res.ok || res.headers.get('content-type')?.includes('text/html')) throw new Error(`Invalid API response (${res.status})`);
+      if (!res.ok || res.headers.get('content-type')?.includes('text/html')) throw new Error(`استجابة API غير صالحة (${res.status})`);
       const json = await res.json();
       if (json?.data) {
         const match = json.data.match(/```json\s*([\s\S]*?)\s*```/);
@@ -37,7 +37,7 @@ async function obtenerPregunta(tipo) {
         }
       }
     } catch (e) {
-      console.error('[IA backup]', e.message || e);
+      console.error('[النسخة الاحتياطية للذكاء الاصطناعي]', e.message || e);
     }
   }
 
@@ -48,23 +48,23 @@ async function obtenerPregunta(tipo) {
     preguntasUsadas.add(pregunta.question);
     return pregunta;
   } catch (e) {
-    console.error('Respaldo fallido', e);
+    console.error('فشلت النسخة الاحتياطية', e);
     return null;
   }
 }
 
 let handler = async (m, { conn, command }) => {
 const id = m.chat;
-if (juegos[id]) return conn.reply(m.chat, '⚠️ Ya hay un juego activo en este chat.', m);
+if (juegos[id]) return conn.reply(m.chat, '⚠️ هناك لعبة نشطة بالفعل في هذه الدردشة.', m);
 
-const tipo = /acert/i.test(command) ? 'acertijo' : /pelicula|adv/i.test(command) ? 'pelicula' : /trivia/i.test(command) ? 'trivia' : null;
+const tipo = /لغز|acert/i.test(command) ? 'acertijo' : /فيلم|pelicula|adv/i.test(command) ? 'pelicula' : /ثقافة|trivia/i.test(command) ? 'trivia' : null;
 if (!tipo) return;
 const pregunta = await obtenerPregunta(tipo);
-if (!pregunta) return m.reply('❌ No se pudo generar la pregunta.');
+if (!pregunta) return m.reply('❌ تعذر إنشاء السؤال.');
 const tiempo = tipo === 'trivia' ? timeout2 : timeout;
 const texto = `${pregunta.question}
 
-*• Tiempo:* ${tiempo / 1000}s\n*• Bono:* +${poin} XP`;
+*• الوقت:* ${tiempo / 1000} ثانية\n*• المكافأة:* +${poin} نقطة خبرة`;
 const enviado = await conn.sendMessage(m.chat, { text: texto }, { quoted: m });
 
 juegos[id] = {
@@ -75,7 +75,7 @@ puntos: poin,
 intentos: 3,
 timeout: setTimeout(() => {
 if (juegos[id]) {
-conn.reply(m.chat, `⏳ Se acabó el tiempo.\n*Respuesta:* ${pregunta.response}`, enviado);
+conn.reply(m.chat, `⏳ انتهى الوقت.\n*الإجابة:* ${pregunta.response}`, enviado);
 delete juegos[id];
 }}, tiempo)
 }};
@@ -91,22 +91,24 @@ const esCorrecta = userInput === correcta || similarity(userInput, correcta) >= 
 
 if (esCorrecta) {
 await m.db.query('UPDATE usuarios SET exp = exp + $1 WHERE id = $2', [juego.puntos, m.sender]);
-m.reply(`✅ *¡Correcto!*\nGanaste +${juego.puntos} XP`);
+m.reply(`✅ *إجابة صحيحة!*\nلقد ربحت +${juego.puntos} نقطة خبرة`);
 clearTimeout(juego.timeout);
 delete juegos[id];
 } else {
 juego.intentos--;
 if (juego.intentos <= 0) {
-m.reply(`❌ Fallaste 3 veces. La respuesta era: *${juego.pregunta.response}*`);
+m.reply(`❌ فشلت 3 مرات. الإجابة كانت: *${juego.pregunta.response}*`);
 clearTimeout(juego.timeout);
 delete juegos[id];
 } else {
-m.reply(`❌ Incorrecto. Te quedan *${juego.intentos}* intento(s).`);
+m.reply(`❌ إجابة خاطئة. لديك *${juego.intentos}* محاولة/محاولات متبقية.`);
 }}
 };
-handler.help = ['acertijo', 'pelicula', 'trivia'];
-handler.tags = ['game'];
-handler.command = /^(acertijo|acert|adivinanza|tekateki|pelicula|adv|trivia)$/i;
+
+// الأوامر العربية المضافة
+handler.help = ['acertijo', 'pelicula', 'trivia', 'لغز', 'فيلم', 'ثقافة'];
+handler.tags = ['game', 'الألعاب', 'ترفيه'];
+handler.command = /^(acertijo|acert|adivinanza|tekateki|pelicula|adv|trivia|لغز|الغاز|احجية|فيلم|افلام|تخمين_فيلم|ثقافة|معلومات|ترفيه)$/i;
 handler.register = true;
 
 export default handler;
