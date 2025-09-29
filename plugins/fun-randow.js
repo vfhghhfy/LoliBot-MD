@@ -1,4 +1,4 @@
-import axios from 'axios' 
+/*import axios from 'axios' 
 let handler = async (m, { conn, command, text, usedPrefix, args}) => {
 
 if (command == 'piropo') {
@@ -1040,3 +1040,4 @@ const asmaulhusna = [
         translation_en: "Podemos engañarnos y creer que somos buenas personas, pero hasta los más egoístas pueden perder la cabeza por alguien y parecer personas entregadas.",
     }
 ]
+*/
