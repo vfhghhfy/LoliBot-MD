@@ -7,17 +7,18 @@ const user = res.rows[0];
 
 const last = Number(user?.wait) || 0;
 const remaining = last + cooldown - now;
-if (remaining > 0) return conn.reply(m.chat, `🕓 Calma crack, espera *${msToTime(remaining)}* antes de volver a jugar.`, m);
+if (remaining > 0) return conn.reply(m.chat, `🕓 تمهل يا بطل، انتظر *${msToTime(remaining)}* قبل اللعب مرة أخرى.`, m);
 
 const tipoArg = (args[0] || '').toLowerCase();
-const tipo = tipoArg === 'xp' ? 'exp' : tipoArg;
+// تحويل الأنواع العربية
+const tipo = traducirTipo(tipoArg);
 const cantidad = parseInt(args[1]);
 
-if (!['exp', 'money', 'limite'].includes(tipo)) return m.reply(`⚠️ Usa correctamente: /slot <xp|money|limite> <cantidad>\nEjemplo: /slot xp 500`);
-if (!cantidad || isNaN(cantidad) || cantidad < 10) return m.reply(`❌ Mínimo 10 para apostar.`);
+if (!['exp', 'money', 'limite'].includes(tipo)) return m.reply(`⚠️ استخدم بشكل صحيح: !سلوت <خبرة|عملات|حدود> <مبلغ>\nمثال: !سلوت خبرة 500`);
+if (!cantidad || isNaN(cantidad) || cantidad < 10) return m.reply(`❌ الحد الأدنى للمراهنة هو 10.`);
 
 const saldo = user[tipo];
-if (saldo < cantidad) return m.reply(`❌ No tienes suficiente ${tipo.toUpperCase()} para apostar. Tienes *${formatNumber(saldo)}*`);
+if (saldo < cantidad) return m.reply(`❌ ليس لديك ${tipoBonito(tipo)} كافية للمراهنة. لديك *${formatNumber(saldo)}*`);
 
 const emojis = ['💎', '⚡', '🪙', '🧿', '💣', '🔮'];
 let final;
@@ -41,13 +42,13 @@ let textoFinal = '';
 
 if (resultado === 'triple') {
 ganancia = cantidad * 3;
-textoFinal = `🎉 ¡Triple! Ganaste *${formatNumber(ganancia)} ${tipoBonito(tipo)}*`;
+textoFinal = `🎉 ثلاثة متطابقة! ربحت *${formatNumber(ganancia)} ${tipoBonito(tipo)}*`;
 } else if (resultado === 'doble') {
 ganancia = cantidad;
-textoFinal = `😏 Dos iguales. Recuperaste *${formatNumber(ganancia)} ${tipoBonito(tipo)}*`;
+textoFinal = `😏 اثنان متطابقان. استعدت *${formatNumber(ganancia)} ${tipoBonito(tipo)}*`;
 } else {
 ganancia = -cantidad;
-textoFinal = `💀 Mala suerte. Perdiste *${formatNumber(cantidad)} ${tipoBonito(tipo)}*`;
+textoFinal = `💀 حظ سيء. خسرت *${formatNumber(cantidad)} ${tipoBonito(tipo)}*`;
 }
 
 const nuevoSaldo = saldo + ganancia;
@@ -55,9 +56,11 @@ const nuevoSaldo = saldo + ganancia;
 await delay(600);
 await conn.sendMessage(m.chat, { text: render(final) + `\n\n${textoFinal}`, edit: msg.key });
 };
-handler.command = ['slot'];
-handler.help = ['slot <xp|money|limite> <cantidad>'];
-handler.tags = ['game'];
+
+// الأوامر العربية المضافة
+handler.command = ['slot', 'سلوت', 'سلوتس', 'ماكينة'];
+handler.help = ['slot <xp|money|limite> <cantidad>', 'سلوت <خبرة|عملات|حدود> <مبلغ>'];
+handler.tags = ['game', 'القمار', 'الألعاب'];
 handler.register = true;
 
 export default handler;
@@ -67,7 +70,7 @@ function rand(arr) {
 }
 
 function render(matriz) {
-  return `🎰 | *SLOTS* | 🎰\n────────────\n${matriz.map(row => row.join(' | ')).join('\n')}\n────────────`;
+  return `🎰 | *ماكينة السلوت* | 🎰\n────────────\n${matriz.map(row => row.join(' | ')).join('\n')}\n────────────`;
 }
 
 function renderRandom(emojis) {
@@ -97,12 +100,26 @@ function formatNumber(num) {
 function msToTime(duration) {
   const s = Math.floor(duration / 1000) % 60;
   const m = Math.floor(duration / (1000 * 60)) % 60;
-  return `${m ? `${m}m ` : ''}${s}s`;
+  return `${m ? `${m}د ` : ''}${s}ث`;
 }
 
 function tipoBonito(tipo) {
-  if (tipo === 'money') return 'LoliCoins';
-  if (tipo === 'limite') return 'Diamantes';
-  return 'XP';
+  if (tipo === 'money') return 'عملات';
+  if (tipo === 'limite') return 'حدود';
+  return 'خبرة';
 }
 
+// دالة لترجمة الأنواع العربية
+function traducirTipo(tipo) {
+  const traducciones = {
+    'خبرة': 'exp',
+    'xp': 'exp',
+    'exp': 'exp',
+    'عملات': 'money',
+    'money': 'money',
+    'حدود': 'limite',
+    'limite': 'limite',
+    'limits': 'limite'
+  };
+  return traducciones[tipo] || tipo;
+}
