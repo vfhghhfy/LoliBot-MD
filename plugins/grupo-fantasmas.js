@@ -20,26 +20,28 @@ let total = sider.length;
 
 switch (command.toLowerCase()) {
 case 'fantasmas':
-if (total === 0) return m.reply(`⚠️ Este grupo es activo, ¡no tiene fantasmas! :D`);
-let teks = `⚠️ REVISIÓN DE INACTIVOS ⚠️\n\n`;
-teks += `Grupo: ${metadata.subject || 'Sin nombre'}\n`;
-teks += `*Miembros del grupo:* ${memberData.length}\n`;
-teks += `*Miembros inactivos:* ${total}\n\n`;
-teks += `[ 👻 LISTA DE FANTASMAS 👻 ]\n`;
+case 'أشباح':
+if (total === 0) return m.reply(`⚠️ هذه المجموعة نشطة، لا توجد أشباح! :D`);
+let teks = `⚠️ فحص الأعضاء غير النشطين ⚠️\n\n`;
+teks += `المجموعة: ${metadata.subject || 'بدون اسم'}\n`;
+teks += `*أعضاء المجموعة:* ${memberData.length}\n`;
+teks += `*الأعضاء غير النشطين:* ${total}\n\n`;
+teks += `[ 👻 قائمة الأشباح 👻 ]\n`;
 teks += sider.map(v => `  👉🏻 @${v.id.split('@')[0]}`).join('\n');
-teks += `\n\n*Nota:* Esto puede no ser 100% acertado. El bot inicia el conteo de mensajes desde que se activó en este grupo.`;
+teks += `\n\n*ملاحظة:* قد لا يكون هذا دقيقاً 100%. البوت يبدأ عد الرسائل من وقت تفعيله في هذه المجموعة.`;
 await conn.sendMessage(m.chat, { text: teks, contextInfo: { mentionedJid: sider.map(v => v.id)}}, { quoted: m });
 break;
 
 case 'kickfantasmas':
-if (total === 0) return m.reply(`⚠️ Este grupo es activo, ¡no tiene fantasmas! :D`);
-let kickTeks = `⚠️ ELIMINACIÓN DE INACTIVOS ⚠️\n\n`;
-kickTeks += `Grupo: ${metadata.subject || 'Sin nombre'}\n`;
-kickTeks += `*Miembros del grupo:* ${memberData.length}\n`;
-kickTeks += `*Miembros inactivos:* ${total}\n\n`;
-kickTeks += `[ 👻 FANTASMAS A ELIMINAR 👻 ]\n`;
+case 'طرد_الأشباح':
+if (total === 0) return m.reply(`⚠️ هذه المجموعة نشطة، لا توجد أشباح! :D`);
+let kickTeks = `⚠️ طرد الأعضاء غير النشطين ⚠️\n\n`;
+kickTeks += `المجموعة: ${metadata.subject || 'بدون اسم'}\n`;
+kickTeks += `*أعضاء المجموعة:* ${memberData.length}\n`;
+kickTeks += `*الأعضاء غير النشطين:* ${total}\n\n`;
+kickTeks += `[ 👻 الأشباح المراد طردهم 👻 ]\n`;
 kickTeks += sider.map(v => `@${v.id.split('@')[0]}`).join('\n');
-kickTeks += `\n\n*El bot eliminará la lista mencionada, empezando en 20 segundos, con 10 segundos entre cada expulsión.*`;
+kickTeks += `\n\n*سيقوم البوت بطرد القائمة المذكورة، بدءاً بعد 20 ثانية، مع 10 ثوانٍ بين كل طرد.*`;
 await conn.sendMessage(m.chat, { text: kickTeks, contextInfo: { mentionedJid: sider.map(v => v.id) }}, { quoted: m });
 
 let chatSettings = (await db.query("SELECT * FROM group_settings WHERE group_id = $1", [m.chat])).rows[0] || {};
@@ -58,16 +60,18 @@ await db.query(`UPDATE group_settings
             SET welcome = $1
             WHERE group_id = $2`, [originalWelcome, m.chat]);
 }
-await m.reply(`✅ Eliminación de fantasmas completada.`);
+await m.reply(`✅ اكتمل طرد الأشباح.`);
 break;
 }
 } catch (err) {
 console.error(err);
-m.reply("❌ Error ejecutando el comando. Por favor, intenta de nuevo.");
+m.reply("❌ خطأ في تنفيذ الأمر. يرجى المحاولة مرة أخرى.");
 }}; 
-handler.help = ['fantasmas', 'kickfantasmas'];
-handler.tags = ['group'];
-handler.command = /^(fantasmas|kickfantasmas)$/i;
+
+// الأوامر العربية المضافة
+handler.help = ['fantasmas', 'kickfantasmas', 'أشباح', 'طرد_الأشباح'];
+handler.tags = ['group', 'المجموعة'];
+handler.command = /^(fantasmas|kickfantasmas|أشباح|طرد_الأشباح)$/i;
 handler.group = true;
 handler.botAdmin = true;
 handler.admin = true; 
