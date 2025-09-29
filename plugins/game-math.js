@@ -12,14 +12,14 @@ const dificultades = {
 let handler = async (m, { conn, args, command }) => {
 const dificultad = (args[0] || '').toLowerCase();
 if (!dificultad || !dificultades[dificultad]) {
-return m.reply(`⚠️ Debes elegir una dificultad válida.
+return m.reply(`⚠️ يجب اختيار مستوى صعوبة صالح.
 
-Ejemplos:
-/math noob
-/math easy
-/math hard
+أمثلة:
+!رياضيات مبتدئ
+!رياضيات سهل  
+!رياضيات صعب
 
-Dificultades disponibles:
+مستويات الصعوبة المتاحة:
 ${Object.keys(dificultades).map(k => `- ${k}`).join('\n')}`);
 }
 
@@ -34,14 +34,14 @@ mathGames.set(m.sender, { result, exp: recompensa, intentos: 3 });
 setTimeout(() => {
 if (mathGames.has(m.sender)) {
 mathGames.delete(m.sender);
-conn.reply(m.chat, `⌛ sᴇ ᴀᴄᴀʙᴏ ᴇʟ ᴛɪᴇᴍᴘᴏ ʟᴀ ʀᴇsᴘᴜᴇsᴛᴀ ᴇs: *${result}*`, m);
+conn.reply(m.chat, `⌛ انتهى الوقت، الإجابة هي: *${result}*`, m);
 }}, nivel.tiempo);
 return m.reply(`╭┄〔 *${info.wm}* 〕┄⊱
-┆𝘾𝙪𝙖𝙡 𝙚𝙨 𝙧𝙚𝙨𝙪𝙡𝙩𝙖𝙙𝙤 𝙙𝙚: *${a} ${op} ${b} = ?*
+┆ما هو ناتج: *${a} ${op} ${b} = ?*
 ┆┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┆🧭 𝙏𝙞𝙚𝙢𝙥𝙤: * ${nivel.tiempo / 1000} segundos*
+┆🧭 الوقت: * ${nivel.tiempo / 1000} ثانية*
 ┆┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┆𝙍𝙚𝙨𝙥𝙤𝙣𝙙𝙚 𝙖 𝙚𝙨𝙩𝙚 𝙢𝙚𝙣𝙨𝙖𝙟𝙚 𝙮 𝙂𝙖𝙣𝙖 
+┆أجب على هذه الرسالة واربح 
 ┆🏆 *${recompensa}: XP*
 ╰━━━⊰ 𓃠 ${info.vs} ⊱━━━━დ`);
 };
@@ -61,20 +61,22 @@ correcta = Number(entrada) === result;
 if (correcta) {
 mathGames.delete(m.sender);
 await m.db.query('UPDATE usuarios SET exp = exp + $1 WHERE id = $2', [exp, m.sender]);
-return m.reply(`✅ ¡Correcto! Ganaste *${exp} XP*`);
+return m.reply(`✅ إجابة صحيحة! ربحت *${exp} XP*`);
 } else {
 data.intentos--;
 if (data.intentos <= 0) {
 mathGames.delete(m.sender);
-return m.reply(`❌ Fallaste 3 veces. La respuesta correcta era *${result}*.`);
+return m.reply(`❌ فشلت 3 مرات. الإجابة الصحيحة كانت *${result}*.`);
 } else {
 mathGames.set(m.sender, data);
-return m.reply(`❌ Incorrecto. Te quedan *${data.intentos}* intento(s).`);
+return m.reply(`❌ إجابة خاطئة. بقي لديك *${data.intentos}* محاولة/محاولات.`);
 }}
 };
-handler.help = ['math [dificultad]'];
-handler.tags = ['game'];
-handler.command = ['math', 'mates', 'matemáticas'];
+
+// الأوامر العربية المضافة
+handler.help = ['math [dificultad]', 'رياضيات [مستوى]', 'حساب [مستوى]'];
+handler.tags = ['game', 'تعليم', 'الألعاب'];
+handler.command = ['math', 'mates', 'matemáticas', 'رياضيات', 'رياضيات', 'مسألة'];
 handler.register = true;
 
 export default handler;
