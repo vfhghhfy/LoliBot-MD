@@ -28,15 +28,15 @@ async function enviarEstado(conn, sala, textoExtra = '') {
   const simboloJ1 = symbols[0];
   const simboloJ2 = symbols[1];
 
-  const msg = `💖 𝙅𝙪𝙚𝙜𝙤 𝙩𝙖𝙩𝙚𝙩𝙞
-🫂 𝙅𝙪𝙜𝙖𝙙𝙤𝙧𝙚𝙨:
+  const msg = `💖 لعبة إكس أو
+🫂 اللاعبون:
 *┈┈┈┈┈┈┈┈┈*
 ${simboloJ1} = @${j1?.split('@')[0]}
-${simboloJ2} = @${j2?.split('@')[0] || 'esperando'}
+${simboloJ2} = @${j2?.split('@')[0] || 'بانتظار الخصم'}
 *┈┈┈┈┈┈┈┈┈*${renderTablero(sala.tablero)}
 *┈┈┈┈┈┈┈┈┈*
 ${textoExtra ? `
-${textoExtra}` : `𝙏𝙪𝙧𝙣𝙤 𝙙𝙚:
+${textoExtra}` : `دور:
 @${sala.turno.split('@')[0]}`}`;
 
   await conn.sendMessage(sala.chat, { text: msg, mentions: sala.jugadores });
@@ -45,26 +45,30 @@ ${textoExtra}` : `𝙏𝙪𝙧𝙣𝙤 𝙙𝙚:
 let handler = async (m, { conn, args, command }) => {
 const customNombre = args[0]?.toLowerCase();
 
-if (command === 'tttlist') {
-if (salasTTT.size === 0) return m.reply('⚠️ No hay salas activas actualmente.');
-let text = '🎮 *Salas activas:*';
+// تحويل الأوامر العربية
+const comandoTraducido = traducirComando(command);
+
+if (comandoTraducido === 'tttlist') {
+if (salasTTT.size === 0) return m.reply('⚠️ لا توجد غرف نشطة حالياً.');
+let text = '🎮 *الغرف النشطة:*';
 let count = 1;
 for (const [nombre] of salasTTT) {
-text += `\n\n${count++}- *${nombre}*\nIngresa con: /ttt ${nombre}`;
+text += `\n\n${count++}- *${nombre}*\nادخل باستخدام: !اكسو ${nombre}`;
 }
 return m.reply(text.trim());
 }
 
-if (command === 'delttt' || command === 'deltt' || command === 'deltictactoe') {
+if (comandoTraducido === 'delttt') {
 const salaDel = [...salasTTT.values()].find(s => s.jugadores.includes(m.sender));
-if (!salaDel) return m.reply('⚠️ No estás en ninguna sala activa.');
+if (!salaDel) return m.reply('⚠️ لست في أي غرفة نشطة.');
 salasTTT.delete(salaDel.nombre);
-return conn.reply(salaDel.chat, `❌ La sala fue eliminada por @${m.sender.split('@')[0]}.`, m, { mentions: [m.sender] });
+return conn.reply(salaDel.chat, `❌ تم حذف الغرفة بواسطة @${m.sender.split('@')[0]}.`, m, { mentions: [m.sender] });
 }
 
+if (comandoTraducido === 'ttt') {
 if (customNombre) {
 let sala = salasTTT.get(customNombre);
-if (sala && sala.jugadores.includes(m.sender)) return m.reply('⚠️ Ya estás en esta sala.');
+if (sala && sala.jugadores.includes(m.sender)) return m.reply('⚠️ أنت بالفعل في هذه الغرفة.');
 
 if (!sala) {
 salasTTT.set(customNombre, {
@@ -74,10 +78,10 @@ jugadores: [m.sender],
 tablero: [...numerosEmoji],
 turno: m.sender
 });
-return m.reply(`🏃 Esperando oponente para *${customNombre}*.\nUsa: /ttt ${customNombre}`);
+return m.reply(`🏃 في انتظار الخصم للغرفة *${customNombre}*.\nاستخدم: !اكسو ${customNombre}`);
 }
 
-if (sala.jugadores.length >= 2) return m.reply('⚠️ Esta sala ya tiene 2 jugadores.');
+if (sala.jugadores.length >= 2) return m.reply('⚠️ هذه الغرفة بها لاعبين بالفعل.');
 sala.jugadores.push(m.sender);
 salasTTT.set(customNombre, sala);
 return await enviarEstado(conn, sala);
@@ -93,15 +97,15 @@ jugadores: [m.sender],
 tablero: [...numerosEmoji],
 turno: m.sender
 });
-return m.reply(`🏃 Esperando oponente...
-Usa: /ttt para unirte.`);
+return m.reply(`🏃 في انتظار الخصم...
+استخدم: !اكسو للانضمام.`);
 }
 
-if (salaLibre.jugadores.includes(m.sender)) return m.reply('⚠️ Ya estás en una sala.');
+if (salaLibre.jugadores.includes(m.sender)) return m.reply('⚠️ أنت بالفعل في غرفة.');
 salaLibre.jugadores.push(m.sender);
 salasTTT.set(salaLibre.nombre, salaLibre);
 return await enviarEstado(conn, salaLibre);
-};
+}};
 
 handler.before = async (m, { conn }) => {
 const numero = parseInt(m.originalText.trim());
@@ -118,14 +122,14 @@ const ganador = verificarGanador(sala.tablero);
 if (ganador) {
 let texto = '';
 if (ganador === 'empate') {
-texto = '🤝 ¡Empate! Buen juego.';
+texto = '🤝 تعادل! لعبة جيدة.';
 } else {
 const xp = Math.floor(Math.random() * 3000) + 1000;
 const ganadorId = sala.jugadores[sala.tablero[idx] === symbols[0] ? 0 : 1];
 const perdedorId = sala.jugadores.find(j => j !== ganadorId);
 await m.db.query('UPDATE usuarios SET exp = exp + $1 WHERE id = $2', [xp, ganadorId]);
 await m.db.query('UPDATE usuarios SET exp = exp - $1 WHERE id = $2', [xp, perdedorId]);
-texto = `🎉 @${ganadorId.split('@')[0]} *ganarte* y recibe *${xp} XP*!`;
+texto = `🎉 @${ganadorId.split('@')[0]} *فاز* وحصل على *${xp} XP*!`;
 }
 await enviarEstado(conn, sala, texto);
 salasTTT.delete(nombre);
@@ -135,12 +139,30 @@ return;
 sala.turno = sala.jugadores.find(j => j !== m.sender);
 await enviarEstado(conn, sala);
 } else {
-m.reply('❌ Esa casilla ya está ocupada.');
+m.reply('❌ هذه الخلية محجوزة بالفعل.');
 }}
 };
-handler.help = ['ttt', 'ttt nombre', 'delttt', 'tttlist'];
-handler.tags = ['game'];
-handler.command = ['ttt', 'ttc', 'tictactoe', 'delttt', 'tttlist', 'deltt', 'deltictactoe'];
+
+// الأوامر العربية المضافة
+handler.help = ['ttt', 'ttt nombre', 'delttt', 'tttlist', 'اكسو', 'اكساو', 'قائمة_الغرف', 'حذف_غرفة'];
+handler.tags = ['game', 'الألعاب', 'تحدي'];
+handler.command = ['ttt', 'ttc', 'tictactoe', 'delttt', 'tttlist', 'deltt', 'deltictactoe', 'اكسو', 'اكساو', 'إكسأو', 'لعبة_إكس_أو', 'قائمة', 'حذف', 'الغرف'];
 handler.register = true;
 
 export default handler;
+
+// دالة لترججة الأوامر العربية
+function traducirComando(comando) {
+  const traducciones = {
+    'اكسو': 'ttt',
+    'اكساو': 'ttt',
+    'إكسأو': 'ttt',
+    'لعبة_إكس_أو': 'ttt',
+    'قائمة': 'tttlist',
+    'الغرف': 'tttlist',
+    'قائمة_الغرف': 'tttlist',
+    'حذف': 'delttt',
+    'حذف_غرفة': 'delttt'
+  };
+  return traducciones[comando] || comando;
+}
