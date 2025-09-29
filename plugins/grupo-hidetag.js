@@ -2,7 +2,7 @@ import { generateWAMessageFromContent } from "@whiskeysockets/baileys"
 import * as fs from 'fs'
 
 var handler = async (m, { conn, text, participants, isOwner, usedPrefix, command, isAdmin }) => {
-if (!m.quoted && !text) return m.reply(`وأين النص؟`) 
+if (!m.quoted && !text) return m.reply(`❌ وأين النص؟`) 
 let users = participants.map(u => conn.decodeJid(u.id))
 if (m.quoted && m.quoted.message) {
 const type = Object.keys(m.quoted.message)[0]
@@ -55,9 +55,11 @@ await conn.sendMessage(m.chat, { text: texto, contextInfo: { mentionedJid: users
 } catch (e) {
 console.error(e)
 }}
-handler.help = ['hidetag']
-handler.tags = ['group']
-handler.command = /^(hidetag|notificar|notify|إشعار|منشن)$/i
+
+// الأوامر العربية المضافة
+handler.help = ['hidetag', 'notificar', 'إشعار', 'منشن', 'تاق']
+handler.tags = ['group', 'المجموعة']
+handler.command = /^(hidetag|notificar|notify|إشعار|منشن|تاق)$/i
 handler.group = true
 handler.admin = true
 handler.register = true 
