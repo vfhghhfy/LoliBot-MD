@@ -1,17 +1,17 @@
 import fetch from 'node-fetch';
 
 const handler = async (m, { args, usedPrefix, command }) => {
-const defaultLang = 'es';
-if (!args || !args[0]) return m.reply(`⚠️ *Uso correcto del comando:*  
-» ${usedPrefix + command} (idioma destino) (texto a traducir)
+const defaultLang = 'ar';
+if (!args || !args[0]) return m.reply(`⚠️ *الاستخدام الصحيح للأمر:*  
+» ${usedPrefix + command} (اللغة الهدف) (النص المطلوب ترجمته)
 
-📌 *Ejemplos:*
-• ${usedPrefix + command} es Hello » Español
-• ${usedPrefix + command} en hola » inglés
-• ${usedPrefix + command} fr buenos días » Francés
-• ${usedPrefix + command} pt tudo bem » Portugués
-• ${usedPrefix + command} de cómo estás » Alemán
-• ${usedPrefix + command} it buongiorno » Italiano`);
+📌 *أمثلة:*
+• ${usedPrefix + command} en مرحبا » الإنجليزية
+• ${usedPrefix + command} fr صباح الخير » الفرنسية
+• ${usedPrefix + command} pt كيف حالك » البرتغالية
+• ${usedPrefix + command} de جيد » الألمانية
+• ${usedPrefix + command} it صباح الخير » الإيطالية
+• ${usedPrefix + command} es السلام عليكم » الإسبانية`);
 
   let lang = args[0];
   let text = args.slice(1).join(' ');
@@ -41,18 +41,19 @@ if (!args || !args[0]) return m.reply(`⚠️ *Uso correcto del comando:*
 
     const json = await res.json();
 
-    if (!json || !json.translatedText) throw '❌ No se pudo traducir.';
+    if (!json || !json.translatedText) throw '❌ تعذرت الترجمة.';
 
-    await m.reply(`*Traducción:*\n${json.translatedText}`);
+    await m.reply(`*الترجمة:*\n${json.translatedText}`);
   } catch (e) {
     console.error(e);
-    await m.reply('*[❗𝐈𝐍𝐅𝐎❗] ERROR, VUELVA A INTENTARLO*');
+    await m.reply('*[❗معلومة❗] خطأ، يرجى المحاولة مرة أخرى*');
   }
 };
 
-handler.help = ['traducir', 'translate'];
-handler.tags = ['tools'];
-handler.command = /^(translate|traducir|trad)$/i;
+// الأوامر العربية المضافة
+handler.help = ['ترجمة', 'ترجم', 'translate', 'traducir'];
+handler.tags = ['أدوات', 'tools'];
+handler.command = /^(translate|traducir|trad|ترجمة|ترجم)$/i;
 handler.register = true;
 
 export default handler;
