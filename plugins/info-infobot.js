@@ -76,7 +76,7 @@ const latencia = speed() - start;
 const uptime = process.uptime() * 1000;
 const config = await getSubbotConfig(conn.user?.id || conn.user.jid);
 const prefijos = Array.isArray(config.prefix) ? config.prefix.join(' ') : config.prefix;
-const modo = config.mode === 'private' ? 'Private' : 'Públic';
+const modo = config.mode === 'private' ? 'خاص' : 'عام';
 const [{ count: totalUsers }] = (await db.query(`SELECT COUNT(*)::int FROM usuarios`)).rows;
 const [{ count: registeredUsers }] = (await db.query(`SELECT COUNT(*)::int FROM usuarios WHERE registered = true`)).rows;
 const [{ count: totalChats }] = (await db.query(`SELECT COUNT(*)::int FROM chats`)).rows;
@@ -84,36 +84,54 @@ const [{ total }] = (await db.query(`SELECT SUM(count)::int AS total FROM stats`
 const comandosEjecutados = total || 0;
 const sistema = await getSystemInfo();
 
-const teks = `*≡ INFOBOT*
+const teks = `*≡ معلومات البوت*
 
-*INFORMACIÓN*
-*▣ Grupos total:* ${totalGrupos}
-*▣ Grupos unidos:* ${gruposUnidos}
-*▣ Grupo salidos:* ${gruposSalidos}
-*▣ Chats privado:* ${privates}
-*▣ Chats totales:* ${chatsTotales}
-*▣ Sub-Bots conectado:* ${subbotsCount}
-*▣ Total plugins:* ${totalPlugins}
-*▣ Mode:* ${modo}
-*▣ Prefix:* ${prefijos}
-*▣ Velocidad:* ${latencia.toFixed(4)} ms
-*▣ Actividad:* ${new Date(uptime).toISOString().substr(11, 8)}
+*المعلومات*
+*▣ المجموعات الكلية:* ${totalGrupos}
+*▣ المجموعات الموجود فيها:* ${gruposUnidos}
+*▣ المجموعات المتروكة:* ${gruposSalidos}
+*▣ الدردشات الخاصة:* ${privates}
+*▣ إجمالي الدردشات:* ${chatsTotales}
+*▣ البوتات الفرعية:* ${subbotsCount}
+*▣ إجمالي الإضافات:* ${totalPlugins}
+*▣ الوضع:* ${modo}
+*▣ البادئة:* ${prefijos}
+*▣ السرعة:* ${latencia.toFixed(4)} مللي ثانية
+*▣ مدة التشغيل:* ${new Date(uptime).toISOString().substr(11, 8)}
 
-*▣ Comandos ejecutados:* ${toNum(comandosEjecutados)} / ${comandosEjecutados}
-*▣ Grupos registrados:* ${toNum(totalChats)} / ${totalChats}
-*▣ Usuarios registrados:* ${toNum(registeredUsers)} de ${toNum(totalUsers)} users totales
+*▣ الأوامر المنفذة:* ${toNum(comandosEjecutados)} / ${comandosEjecutados}
+*▣ المجموعات المسجلة:* ${toNum(totalChats)} / ${totalChats}
+*▣ المستخدمون المسجلون:* ${toNum(registeredUsers)} من ${toNum(totalUsers)} مستخدم
 
-*≡ S E R V E R*
-▣ *Servidor:* ${os.hostname()}
-▣ *Plataforma:* ${sistema.plataforma}
-▣ *RAM usada:* ${sistema.usoRam}
-▣ *Uso de CPU:* ${sistema.usoCpu}
-▣ *Uptime:* ${sistema.tiempoActividad}`;
-await conn.sendMessage(m.chat, {text: teks, contextInfo: { mentionedJid: null, forwardingScore: 1, isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: "120363305025805187@newsletter",newsletterName: "LoliBot ✨️" }, externalAdReply : {mediaUrl:  [info.nna, info.nna2, info.md].getRandom(), mediaType: 2, description: null, title: `INFO - BOT`, previewType: 0, thumbnailUrl: "https://telegra.ph/file/39fb047cdf23c790e0146.jpg", sourceUrl: info.yt}}}, { quoted: m })
+*≡ الخادم*
+▣ *الخادم:* ${os.hostname()}
+▣ *النظام:* ${sistema.plataforma}
+▣ *الذاكرة المستخدمة:* ${sistema.usoRam}
+▣ *استخدام المعالج:* ${sistema.usoCpu}
+▣ *مدة التشغيل:* ${sistema.tiempoActividad}`;
+
+await conn.sendMessage(m.chat, {
+  text: teks, 
+  contextInfo: { 
+    mentionedJid: null, 
+    forwardingScore: 1, 
+    isForwarded: true, 
+    externalAdReply: {
+      mediaUrl: [info.nna, info.nna2, info.md].getRandom(), 
+      mediaType: 2, 
+      description: null, 
+      title: `معلومات البوت`, 
+      previewType: 0, 
+      thumbnailUrl: "https://telegra.ph/file/39fb047cdf23c790e0146.jpg", 
+      sourceUrl: info.yt
+    }
+  }
+}, { quoted: m })
 };
-handler.help = ['infobot']
+
+handler.help = ['معلومات', 'infobot']
 handler.tags = ['main']
-handler.command = /^(infobot|informacionbot|infololi)$/i
+handler.command = /^(معلومات|معلومات-البوت|infobot|انفوبوت)$/i
 handler.register = true
 export default handler
 
@@ -134,7 +152,5 @@ const toTime = (ms) => {
   const h = Math.floor(ms / 3600000) % 24
   const m = Math.floor(ms / 60000) % 60
   const s = Math.floor(ms / 1000) % 60
-  return `${d}d ${h}h ${m}m ${s}s`
+  return `${d}يوم ${h}ساعة ${m}دقيقة ${s}ثانية`
 }
-
-
