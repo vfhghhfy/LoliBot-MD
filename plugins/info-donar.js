@@ -1,4 +1,4 @@
-import fs from 'fs';
+/*import fs from 'fs';
 let handler = async (m, { conn, command }) => {
 let fkontak = { "key": { "participants":"0@s.whatsapp.net", "remoteJid": "status@broadcast", "fromMe": false, "id": "Halo" }, "message": { "contactMessage": { "vcard": `BEGIN:VCARD\nVERSION:3.0\nN:Sy;Bot;;;\nFN:y\nitem1.TEL;waid=${m.sender.split('@')[0]}:${m.sender.split('@')[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD` }}, "participant": "0@s.whatsapp.net" }
 let pp = fs.readFileSync('./media/Menu2.jpg');
@@ -58,3 +58,4 @@ handler.tags = ['main']
 handler.command = /^dona(te|si)|donar|apoyar|paypal|donating|creditos$/i
 handler.register = true
 export default handler
+*/
