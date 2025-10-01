@@ -1,4 +1,4 @@
-let handler  = async (m, { conn, usedPrefix: _p }) => {
+/*let handler  = async (m, { conn, usedPrefix: _p }) => {
 let texto = `*✅ BIENVENIDO A LOS GRUPOS OFICIALES*
 
   1) *${info.nn}*
@@ -32,3 +32,4 @@ handler.tags = ['main']
 handler.command = /^linkgc|grupos|gruposgatabot|gatabotgrupos|gruposdegatabot|groupofc|gruposgb|grupogb|groupgb$/i
 handler.register = true 
 export default handler
+*/
