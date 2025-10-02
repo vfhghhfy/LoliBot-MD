@@ -1,11 +1,14 @@
 const handler = async (m) => {
-const uptime = process.uptime() * 1000 // en milisegundos
-const tiempo = clockString(uptime)
-m.reply(`⏱️ *Uptime:* ${tiempo}`)
+  const uptime = process.uptime() * 1000 // بالميلي ثانية
+  const tiempo = clockString(uptime)
+  m.reply(`⏱️ *مدة التشغيل:* ${tiempo}`)
 }
-handler.help = ['uptime'];
+
+// إضافة الأوامر العربية
+handler.help = ['uptime', 'المدة', 'الوقت'];
 handler.tags = ['main'];
-handler.command = /^uptime$/i
+handler.command = /^(uptime|مدة|الوقت|تشغيل|متى)$/i
+
 export default handler
 
 function clockString(ms) {
