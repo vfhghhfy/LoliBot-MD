@@ -7,7 +7,19 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname  = dirname(__filename)
 
 const handler = async (m, { conn, usedPrefix: _p }) => {
-let fkontak = { "key": { "participants":"0@s.whatsapp.net", "remoteJid": "status@broadcast", "fromMe": false, "id": "Halo" }, "message": { "contactMessage": { "vcard": `BEGIN:VCARD\nVERSION:3.0\nN:Sy;Bot;;;\nFN:y\nitem1.TEL;waid=${m.sender.split('@')[0]}:${m.sender.split('@')[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD` }}, "participant": "0@s.whatsapp.net" }
+let fkontak = { 
+"key": { 
+"participants":"0@s.whatsapp.net", 
+"remoteJid": "status@broadcast", 
+"fromMe": false, 
+"id": "Halo" 
+}, 
+"message": { 
+"contactMessage": { 
+"vcard": `BEGIN:VCARD\nVERSION:3.0\nN:Sy;Bot;;;\nFN:y\nitem1.TEL;waid=${m.sender.split('@')[0]}:${m.sender.split('@')[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD` 
+}}, 
+"participant": "0@s.whatsapp.net" 
+}
 
 let _package = {}
 try {
@@ -21,7 +33,7 @@ const days    = Math.floor(seconds / (24 * 60 * 60))
 const hours   = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60))
 const minutes = Math.floor((seconds % (60 * 60)) / 60)
 const secs = Math.floor(seconds % 60)
-return `🫶 ${info.md}\n\n*⏳ 𝙏𝙄𝙀𝙈𝙋𝙊 𝘼𝘾𝙏𝙄𝙑𝙊:*\n\t${pad(days)} Dias\t ${pad(hours)} Horas ${pad(minutes)} Minutos ${pad(secs)} Segundos\n`
+return `🫶 ${info.md}\n\n*⏳ وقت التشغيل:*\n\t${pad(days)} يوم\t ${pad(hours)} ساعة ${pad(minutes)} دقيقة ${pad(secs)} ثانية\n`
 }
 
 const runtime = process.uptime()
@@ -33,7 +45,7 @@ status: 500,
 surface: 999,
 message: teks,
 description: '^^',
-orderTitle: 'Hi Sis',
+orderTitle: 'مرحباً',
 token: '9',
 curreyCode: 'IDR',
 totalCurrencyCode: '>〰<',
@@ -43,11 +55,14 @@ thumbnailUrl: "https://telegra.ph/file/39fb047cdf23c790e0146.jpg"
 }}, { contextInfo: null, quoted: fkontak })
 await conn.relayMessage(prep.key.remoteJid, prep.message, { messageId: prep.key.id })
 }
-handler.help = ['runtime']
+
+// إضافة الأوامر العربية
+handler.help = ['runtime', 'الوقت', 'التشغيل']
 handler.tags = ['main']
-handler.command = /^(runtime|sc)$/i
+handler.command = /^(runtime|sc|وقت|مدة|التشغيل|المدة)$/i
 handler.owner = false
 handler.group = false
 handler.private = false
 handler.register = true
+
 export default handler
