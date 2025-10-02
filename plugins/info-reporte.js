@@ -1,6 +1,6 @@
-//Código elaborado por: https://github.com/elrebelde21 
+// الكود من تطوير: https://github.com/elrebelde21 
 
-/*FUNCIONA PERO NO COMO QUIERO LUEGO LOS ARREGLOS :v
+/*يعمل ولكن ليس كما أريد سأقوم بإصلاحه لاحقاً :v
 import { webp2png } from '../lib/webp2mp4.js';
 import uploadFile from '../lib/uploadFile.js';
 import uploadImage from '../lib/uploadImage.js';
@@ -14,7 +14,7 @@ const __dirname = dirname(__filename);
 
 const OWNER1 = "5214774444444@s.whatsapp.net";
 const ACTIVE_CONVERSATIONS = {};
-const MAX_VIDEO_SIZE_MB = 60; // Límite de 60MB para videos
+const MAX_VIDEO_SIZE_MB = 60; // حد 60 ميجابايت للفيديوهات
 
 let handler = async (m, { conn, text, args, command, usedPrefix }) => {
 let media = false;
@@ -33,7 +33,7 @@ let videoStats = fs.statSync(videoPath);
 let videoSizeMB = videoStats.size / (1024 * 1024);
 if (videoSizeMB > MAX_VIDEO_SIZE_MB) {
 fs.unlinkSync(videoPath);
-return m.reply(`*⚠️ El video excede el tamaño permitido (max 60 MB). Por favor, recórtalo, comprime o envía uno más ligero.*`);
+return m.reply(`*⚠️ الفيديو يتجاوز الحجم المسموح (الحد الأقصى 60 ميجابايت). يرجى تقليمه، ضغطه أو إرسال فيديو أخف.*`);
 }
 url = videoPath;
 } else {
@@ -47,7 +47,7 @@ let activeConversation = Object.entries(ACTIVE_CONVERSATIONS).find(([id, convo])
 
 if (activeConversation) {
 let [reportId] = activeConversation;
-let message = `📩 *Mensaje del usuario @${m.sender.split("@")[0]} (ID: ${reportId}):*\n${text || ''}`;
+let message = `📩 *رسالة من المستخدم @${m.sender.split("@")[0]} (ID: ${reportId}):*\n${text || ''}`;
 
 if (url) {
 if (/image/.test(mime)) {
@@ -65,30 +65,30 @@ return;
 }
 
 if (command === 'report' || command === 'reporte') {
-if (!text && !m.quoted) return m.reply(`⚠️ 𝐄𝐬𝐜𝐫𝐢𝐛𝐚 𝐞𝐥 𝐞𝐫𝐫𝐨𝐫/𝐜𝐨𝐦𝐚𝐧𝐝𝐨 𝐜𝐨𝐧 𝐟𝐚𝐥𝐥𝐚\n\n*𝐄𝐣:* ${usedPrefix + command} los sticker no funka`);
-if (text.length < 8) throw `${fg} ✨ *𝑴𝒊́𝒏𝒊𝒎𝒐 10 𝒄𝒂𝒓𝒂𝒄𝒕𝒆𝒓𝒆𝒔 𝒑𝒂𝒓𝒂 𝒉𝒂𝒄𝒆𝒓 𝒆𝒍 𝒓𝒆𝒑𝒐𝒓𝒕𝒆...*`
-if (text.length > 1000) throw `${fg} ⚠️ *𝑴𝒂́𝒙𝒊𝒎𝒐 1000 𝑪𝒂𝒓𝒂𝒄𝒕𝒆𝒓𝒆𝒔 𝒑𝒂𝒓𝒂 𝒉𝒂𝒄𝒆𝒓 𝒆𝒍 𝒓𝒆𝒑𝒐𝒓𝒕𝒆.*`
+if (!text && !m.quoted) return m.reply(`⚠️ اكتب الخطأ/الأمر المعطل\n\n*مثال:* ${usedPrefix + command} الملصقات لا تعمل`);
+if (text.length < 8) throw `${fg} ✨ *الحد الأدنى 10 أحرف لعمل التقرير...*`
+if (text.length > 1000) throw `${fg} ⚠️ *الحد الأقصى 1000 حرف لعمل التقرير.*`
 
 let reportId = Math.floor(Math.random() * 901);
 
 ACTIVE_CONVERSATIONS[reportId] = {
 userId: m.sender,
-userName: m.pushName || 'Usuario desconocido',
+userName: m.pushName || 'مستخدم مجهول',
 active: true,
 chatId: m.chat,
 url: url,
 mime: mime,
 };
 
-let reportText = text || (m.quoted && m.quoted.text) || 'Sin mensaje';
+let reportText = text || (m.quoted && m.quoted.text) || 'لا توجد رسالة';
 let teks = `┏╼╾╼⧼⧼⧼ ＲＥＰＯＲＴＥ ⧽⧽⧽╼╼╼┓
-╏• *ɴᴜᴍᴇʀᴏ:* Wa.me/${m.sender.split("@")[0]}
-╏• *ᴍᴇɴsᴀᴊᴇ:* ${reportText}
-┗╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼\n\nResponde al mensaje con:\n*"responder ${reportId} [mensaje]"* para interactuar.\nUsa *.fin ${reportId}* para finalizar la conversación.`
+╏• *الرقم:* Wa.me/${m.sender.split("@")[0]}
+╏• *الرسالة:* ${reportText}
+┗╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼╼\n\nرد على الرسالة باستخدام:\n*"responder ${reportId} [الرسالة]"* للتفاعل.\nاستخدم *.fin ${reportId}* لإنهاء المحادثة.`
 
 await conn.sendMessage(OWNER1, { text: teks, mentions: [m.sender] }, { quoted: m });
 await delay(1000)
-await conn.reply(m.chat, `*⚡ᴇʟ ʀᴇᴘᴏʀᴛᴇ ʜᴀ sɪᴅᴏ ᴇɴᴠɪᴀᴅᴏs ᴀ ᴍɪ ᴄʀᴇᴀᴅᴏʀ, ᴛᴇɴᴅʀᴀ ᴜɴᴀ ʀᴇsᴘᴜᴇsᴛᴀ ᴘʀᴏɴᴛᴏ, ᴅᴇ sᴇʀ ғᴀʟsᴏ sᴇʀᴀ ɪɢɴᴏʀᴀᴅᴏ ᴇʟ ʀᴇᴘᴏʀᴛᴇ*`);
+await conn.reply(m.chat, `*⚡تم إرسال التقرير إلى منشئي، سيكون هناك رد قريباً، إذا كان خاطئاً سيتم تجاهل التقرير*`);
 return;
 }};
 
@@ -97,7 +97,7 @@ let activeConversation = Object.entries(ACTIVE_CONVERSATIONS).find(([id, convo])
 
 if (activeConversation) {
 let [reportId] = activeConversation;
-let message2 = `*📩 Nueva respuesta del usuario @${m.sender.split("@")[0]} (ID: ${reportId}):*\n${m.text || ''}`;
+let message2 = `*📩 رد جديد من المستخدم @${m.sender.split("@")[0]} (ID: ${reportId}):*\n${m.text || ''}`;
 
 if (m.mtype === 'stickerMessage') {
 let sticker = await m.download();
@@ -110,7 +110,7 @@ let url = await uploadImage(media);
 if (url) {                      
 await conn.sendMessage(OWNER1, { [m.mtype === 'videoMessage' ? 'video' : m.mtype === 'audioMessage' ? 'audio' : 'image']: { url }, caption: message2, contextInfo: { mentionedJid: [m.sender] }}, { quoted: m });
 } else {
-console.error('Error');
+console.error('خطأ');
 }} else {
 await conn.sendMessage(OWNER1, { text: message2, mentions: [m.sender] }, { quoted: m });
 }}
@@ -138,7 +138,7 @@ await conn.sendMessage(userId, { sticker: media });
 }} else {
 await conn.sendMessage(userId, { text: ownerMessage });
 }} else {
-await conn.sendMessage(userId, { text: `*• Respuesta del propietario:*\n${ownerMessage}` });
+await conn.sendMessage(userId, { text: `*• رد من المالك:*\n${ownerMessage}` });
 }
 return;
 }
@@ -149,7 +149,7 @@ if (quotedTextMatch) {
 let reportId = quotedTextMatch[1];
 if (ACTIVE_CONVERSATIONS[reportId] && ACTIVE_CONVERSATIONS[reportId].active) {
 let { userId } = ACTIVE_CONVERSATIONS[reportId];
-let ownerMessage = m.text || 'Sin mensaje';
+let ownerMessage = m.text || 'لا توجد رسالة';
 
 if (/image|video|audio|sticker/.test(m.mtype)) {
 let media = await m.download();
@@ -163,7 +163,7 @@ await conn.sendMessage(userId, { audio: { url }, mimetype: m.mimetype });
 } else if (/sticker/.test(m.mtype)) {
 await conn.sendMessage(userId, { sticker: media });
 }} else {
-await conn.sendMessage(userId, { text: `*• Respuesta del propietario:*\n${ownerMessage}` });
+await conn.sendMessage(userId, { text: `*• رد من المالك:*\n${ownerMessage}` });
 }
 return;
 }}}
@@ -172,15 +172,15 @@ let matchFin = m.text.match(/^\.fin (\S+)/i);
 if (matchFin) {
 let [_, reportId] = matchFin;
 
-if (!ACTIVE_CONVERSATIONS[reportId]) return await conn.reply(m.chat, `⚠️ No se encontró ninguna conversación activa con ese ID.`, m);        
+if (!ACTIVE_CONVERSATIONS[reportId]) return await conn.reply(m.chat, `⚠️ لم يتم العثور على محادثة نشطة بهذا المعرف.`, m);        
 let { userId } = ACTIVE_CONVERSATIONS[reportId];
 ACTIVE_CONVERSATIONS[reportId].active = false;
-await conn.reply(userId, `🔒 *La conversación ha sido cerrada por el propietario.*`);
+await conn.reply(userId, `🔒 *تم إغلاق المحادثة من قبل المالك.*`);
 await delay(1000)
-await conn.reply(m.chat, `✔️ Conversación ${reportId} cerrada.`);
+await conn.reply(m.chat, `✔️ المحادثة ${reportId} مغلقة.`);
 return;
 }};
-handler.help = ['reporte', 'request'].map(v => v + ' <teks>')
+handler.help = ['reporte', 'request'].map(v => v + ' <نص>')
 handler.tags = ['main']
 handler.exp = 3500
 handler.command = /^(report|request|reporte|bugs|bug|report-owner|reportes|reportar)$/i 
@@ -194,18 +194,20 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 import { db } from "../lib/postgres.js";
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
-if (!text) return m.reply(`⚠️ Escriba ${command === "suggestion" ? "sugerencias" : "el error/comando con falla"}\n\n*𝐄𝐣:* ${usedPrefix + command} ${command === "suggestion" ? "Agregue un comando de ..." : "los sticker no funka"}`)
-if (text.length < 8) return m.reply(`✨ *𝑴𝒊́𝒏𝒊𝒎𝒐 10 𝒄𝒂𝒓𝒂𝒄𝒕𝒆𝒓𝒆𝒔 𝒑𝒂𝒓𝒂 𝒉𝒂𝒄𝒆𝒓 𝒆𝒍 𝒓𝒆𝒑𝒐𝒓𝒕𝒆...*`)
-if (text.length > 1000) return m.reply(`⚠️ *𝑴𝒂́𝒙𝒊𝒎𝒐 1000 𝑪𝒂𝒓𝒂𝒄𝒕𝒆𝒓𝒆𝒔 𝒑𝒂𝒓𝒂 𝒉𝒂𝒄𝒆𝒓 𝒆𝒍 𝒓𝒆𝒑𝒐𝒓𝒕𝒆.*`)
-const nombre = m.pushName || "sin nombre";
-const tipo = /sugge|suggestion/i.test(command) ? "sugerencia" : "reporte";
+if (!text) return m.reply(`⚠️ اكتب ${command === "suggestion" ? "الاقتراحات" : "الخطأ/الأمر المعطل"}\n\n*مثال:* ${usedPrefix + command} ${command === "suggestion" ? "أضف أمر ..." : "الملصقات لا تعمل"}`)
+if (text.length < 8) return m.reply(`✨ *الحد الأدنى 10 أحرف لعمل التقرير...*`)
+if (text.length > 1000) return m.reply(`⚠️ *الحد الأقصى 1000 حرف لعمل التقرير.*`)
+const nombre = m.pushName || "بدون اسم";
+const tipo = /sugge|suggestion/i.test(command) ? "اقتراح" : "تقرير";
 
 await db.query(`INSERT INTO reportes (sender_id, sender_name, mensaje, tipo) VALUES ($1, $2, $3, $4)`, [m.sender, nombre, text, tipo]);
-return m.reply(tipo === "sugerencia" ? "✅ ¡Gracias! Tu sugerencia ha sido enviada a nuestro equipo de moderación y será tomada en cuenta." : "✅ Tu reporte ha sido enviado a nuestro equipo de moderación y será revisado pronto.");
+return m.reply(tipo === "اقتراح" ? "✅ شكراً لك! تم إرسال اقتراحك إلى فريق الإشراف وسيتم أخذه بعين الاعتبار." : "✅ تم إرسال تقريرك إلى فريق الإشراف وسيتم مراجعته قريباً.");
 };
-handler.help = ["report <texto>", "sugge <sugerencia>"];
+
+// إضافة الأوامر العربية
+handler.help = ["report <نص>", "sugge <اقتراح>", "بلاغ", "اقتراح"];
 handler.tags = ["main"];
-handler.command = /^(report|request|suggestion|sugge|reporte|bugs?|report-owner|reportes|reportar)$/i;
+handler.command = /^(report|request|suggestion|sugge|reporte|bugs?|report-owner|reportes|reportar|بلاغ|تقرير|اقتراح|إقتراح|مشكلة)$/i;
 handler.register = true;
 
 export default handler;
