@@ -9,8 +9,8 @@ const isAlive = sock?.userId && typeof sock?.uptime === 'number';
 return isAlive && id !== mainId;
 });
 
-if (!activos.length) return m.reply("❌ No hay subbots conectados en este momento.")
-let mensaje = `🤖 *SubBots activos: ${activos.length}*\n\n`
+if (!activos.length) return m.reply("❌ لا توجد بوتات فرعية متصلة حالياً.")
+let mensaje = `🤖 *البوتات الفرعية النشطة: ${activos.length}*\n\n`
 const participantes = m.isGroup ? (await conn.groupMetadata(m.chat).catch(() => ({ participants: [] }))).participants || [] : []
 
 for (const sock of activos) {
@@ -26,28 +26,30 @@ config = await getSubbotConfig(configId)
 config = { prefix: ["/", ".", "#"], mode: "public" }
 }
 
-const modo = config.mode === "private" ? "Private" : "Public"
+const modo = config.mode === "private" ? "خاص" : "عام"
 const prefijos = Array.isArray(config.prefix) ? config.prefix : [config.prefix]
 const prefText = prefijos.map(p => `\`${p}\``).join(", ")
 const mainPrefix = (prefijos[0] === "") ? "" : prefijos[0]
 const textoMenu = mainPrefix ? `${mainPrefix}menu` : "menu"
-const uptime = sock.uptime ? formatearMs(Date.now() - sock.uptime) : "Desconocido"
+const uptime = sock.uptime ? formatearMs(Date.now() - sock.uptime) : "غير معروف"
 const estaEnGrupo = participantes.some(p => p.id === userId)
 const mostrarNumero = !config.privacy
 const mostrarPrestar = config.prestar && !config.privacy
 let lineaBot = `• ${mostrarNumero ? `wa.me/${cleanId}?text=${encodeURIComponent(textoMenu)} (${nombre})` : `(${nombre})`}\n`
 mensaje += lineaBot
-mensaje += `   ⏱️ Tiempo activo: *${uptime}*\n`
-mensaje += `   ⚙️ Modo: *${modo}*\n`
-mensaje += `   🛠️ Prefix: ${prefText}\n`
-if (mostrarPrestar) mensaje += `   🟢 *Prestar bot*: #join <enlace>\n`
+mensaje += `   ⏱️ الوقت النشط: *${uptime}*\n`
+mensaje += `   ⚙️ الوضع: *${modo}*\n`
+mensaje += `   🛠️ البادئة: ${prefText}\n`
+if (mostrarPrestar) mensaje += `   🟢 *إقراض البوت*: #join <الرابط>\n`
 mensaje += `\n`
 }
 return m.reply(mensaje.trim())
 }
-handler.help = ['bots']
+
+// إضافة الأوامر العربية
+handler.help = ['bots', 'البوتات', 'الفرعية']
 handler.tags = ['jadibot']
-handler.command = /^bots$/i
+handler.command = /^(bots|البوتات|الفرعية|سبوت|سبوتات)$/i
 export default handler
 
 function formatearMs(ms) {
@@ -55,5 +57,5 @@ function formatearMs(ms) {
   const minutos = Math.floor(segundos / 60)
   const horas = Math.floor(minutos / 60)
   const dias = Math.floor(horas / 24)
-  return `${dias}d ${horas % 24}h ${minutos % 60}m ${segundos % 60}s`
+  return `${dias}يوم ${horas % 24}ساعة ${minutos % 60}دقيقة ${segundos % 60}ثانية`
 }
