@@ -4,7 +4,8 @@ let handler = async (m, { conn, args, isOwner, command }) => {
   const subcmd = args[0]?.toLowerCase();
 
   switch (subcmd) {
-    case 'info': {
+    case 'info':
+    case 'معلومات': { // 🔹 أمر بديل بالعربية
       try {
         const [usuarios, registrados, chats, grupos, mensajes, tablasRes, totalSize] = await Promise.all([
           db.query('SELECT COUNT(*) FROM usuarios'),
@@ -24,47 +25,50 @@ let handler = async (m, { conn, args, isOwner, command }) => {
         ]);
 
         const text = [
-          `📊 *\`ESTADÍSTICAS DE BASE DE DATOS\`*`,
-          `> 👤 Usuarios: *${usuarios.rows[0].count}*`,
-          `> ✅ Registrados: *${registrados.rows[0].count}*`,
-          `> 💬 Chats totales: *${chats.rows[0].count}*`,
-          `> 💾 Tamaño total DB: *${totalSize.rows[0].total}*`,
-          `\n📁 *\`TAMAÑO POR TABLA:\`*`,
-          ...tablasRes.rows.map(r => `• *${r.tabla}*: ${r.filas} filas — ${r.tamaño}`)
+          `📊 *\`إحصائيات قاعدة البيانات\`*`,
+          `> 👤 المستخدمون: *${usuarios.rows[0].count}*`,
+          `> ✅ المسجلون: *${registrados.rows[0].count}*`,
+          `> 💬 عدد الدردشات الكلي: *${chats.rows[0].count}*`,
+          `> 💾 الحجم الإجمالي للقاعدة: *${totalSize.rows[0].total}*`,
+          `\n📁 *\`الحجم حسب الجداول:\`*`,
+          ...tablasRes.rows.map(r => `• *${r.tabla}*: ${r.filas} صفوف — ${r.tamaño}`)
         ].join('\n');
 
         await m.reply(text);
       } catch (e) {
         console.error('[❌] /db info error:', e);
-        await m.reply('❌ Error al consultar la base de datos.');
+        await m.reply('❌ حدث خطأ أثناء استعلام قاعدة البيانات.');
       }
       break;
     }
 
-    case 'optimizar': {
+    case 'optimizar':
+    case 'تحسين': { // 🔹 أمر عربي بديل
       try {
         const inicio = Date.now();
         await db.query('VACUUM FULL;');
         const tiempo = ((Date.now() - inicio) / 1000).toFixed(2);
-        await m.reply(`✅ *Optimización completada.*\n📉 Se ejecutó *VACUUM FULL*\n⏱️ Duración: *${tiempo} segundos*`);
+        await m.reply(`✅ *تمت عملية التحسين بنجاح.*\n📉 تم تنفيذ *VACUUM FULL*\n⏱️ المدة: *${tiempo} ثانية*`);
       } catch (e) {
         console.error('[❌] Error en optimizar:', e);
-        await m.reply('❌ No se pudo optimizar.');
+        await m.reply('❌ لم يتمكن النظام من تحسين القاعدة.');
       }
       break;
     }
 
     default:
-      await m.reply(`❓ Usa uno de estos subcomandos:
+      await m.reply(`❓ استخدم أحد الأوامر التالية:
 
-• /db info — ver estadísticas
-• /db optimizar — VACUUM FULL`);
+• /db info — عرض الإحصائيات
+• /db optimizar — تحسين القاعدة (VACUUM FULL)
+• /قاعدة معلومات — عرض الإحصائيات
+• /قاعدة تحسين — تحسين القاعدة`);
   }
 };
 
-handler.help = ['db info', 'db optimizar', 'db borrar', 'db crear'];
+handler.help = ['db info', 'db optimizar', 'قاعدة معلومات', 'قاعدة تحسين'];
 handler.tags = ['owner'];
-handler.command = /^(db)$/i;
+handler.command = /^(db|قاعدة)$/i; // 🔹 دعم الأمر العربي "قاعدة"
 handler.rowner = true;
 
 export default handler;
