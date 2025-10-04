@@ -3,55 +3,62 @@ import axios from 'axios'
 import hispamemes from 'hispamemes'
 import { db } from '../lib/postgres.js'
 
+// 🧠 محتوى الأوامر (صور - أنمي - ميمز - شخصيات)
 const contenido = {
-  waifu: { label: '*💖 Nyaww 💖*', api: 'waifu', nsfwApi: 'waifu', type: 'api', aliases: [] },
-  neko: { label: '🐱 Neko', api: 'neko', nsfwApi: 'neko', type: 'api', aliases: ['gatito', 'nyan'] },
-  shinobu: { label: '🍡 Shinobu', api: 'shinobu', type: 'api', aliases: [] },
-  megumin: { label: '💥 Megumin', api: 'megumin', type: 'api', aliases: ['meg'] },
-  bully: { label: '😈 Bully', api: 'bully', type: 'api', aliases: [] },
-  cuddle: { label: '🥰 Cuddle', api: 'cuddle', type: 'api', aliases: [] },
-  cry: { label: '😭 Cry', api: 'cry', type: 'api', aliases: [] },
-  bonk: { label: '🔨 Bonk', api: 'bonk', type: 'api', aliases: [] },
-  wink: { label: '😉 Wink', api: 'wink', type: 'api', aliases: [] },
-  handhold: { label: '🤝 Handhold', api: 'handhold', type: 'api', aliases: [] },
-  nom: { label: '🍪 Nom', api: 'nom', type: 'api', aliases: [] },
-  glomp: { label: '💞 Glomp', api: 'glomp', type: 'api', aliases: [] },
-  happy: { label: '😁 Happy', api: 'happy', type: 'api', aliases: [] },
-  poke: { label: '👉 Poke', api: 'poke', type: 'api', aliases: [] },
-  dance: { label: '💃 Dance', api: 'dance', type: 'api', aliases: [] },
-  meme: { label: '🤣 Meme', isMeme: true, aliases: ['memes', 'meme2'] },
-  loli: { label: '*Yo soy tu loli uwu 😍*', type: 'json', url: 'https://raw.githubusercontent.com/elrebelde21/The-LoliBot-MD2/main/src/randow/loli.json', aliases: ['kawaii'] },
-  navidad: { label: '🎄 Navidad', type: 'json', url: 'https://raw.githubusercontent.com/elrebelde21/The-LoliBot-MD2/main/src/randow/navidad.json', aliases: [] },
-  messi: { label: '*🇦🇷 Messi*', type: 'json', url: 'https://raw.githubusercontent.com/elrebelde21/The-LoliBot-MD2/main/src/randow/messi.json', aliases: [] },
-  ronaldo: { label: '_*Siiiuuuuuu*_', type: 'json', url: 'https://raw.githubusercontent.com/elrebelde21/The-LoliBot-MD2/main/src/randow/CristianoRonaldo.json', aliases: [] }
+  waifu: { label: '*💖 وايفو جميلة 💖*', api: 'waifu', nsfwApi: 'waifu', type: 'api', aliases: ['وايفو'] },
+  neko: { label: '🐱 نيكو (قطة)', api: 'neko', nsfwApi: 'neko', type: 'api', aliases: ['قطه', 'نيكو', 'نيان'] },
+  shinobu: { label: '🍡 شينوبو', api: 'shinobu', type: 'api', aliases: ['شينوبو'] },
+  megumin: { label: '💥 ميغومين', api: 'megumin', type: 'api', aliases: ['ميغومين', 'ميغ'] },
+  bully: { label: '😈 تنمّر', api: 'bully', type: 'api', aliases: ['تنمر'] },
+  cuddle: { label: '🥰 عناق', api: 'cuddle', type: 'api', aliases: ['عناق'] },
+  cry: { label: '😭 بكاء', api: 'cry', type: 'api', aliases: ['بكاء'] },
+  bonk: { label: '🔨 ضربة', api: 'bonk', type: 'api', aliases: ['ضرب'] },
+  wink: { label: '😉 غمزة', api: 'wink', type: 'api', aliases: ['غمزه'] },
+  handhold: { label: '🤝 إمساك يد', api: 'handhold', type: 'api', aliases: ['يد', 'إمساك'] },
+  nom: { label: '🍪 أكل بسكويت', api: 'nom', type: 'api', aliases: ['أكل', 'بسكويت'] },
+  glomp: { label: '💞 قفزة حب', api: 'glomp', type: 'api', aliases: ['قفزة', 'عناق_قوي'] },
+  happy: { label: '😁 سعادة', api: 'happy', type: 'api', aliases: ['سعيد', 'فرح'] },
+  poke: { label: '👉 نكزة', api: 'poke', type: 'api', aliases: ['نكزة'] },
+  dance: { label: '💃 رقص', api: 'dance', type: 'api', aliases: ['رقص'] },
+  meme: { label: '🤣 ميم مضحك', isMeme: true, aliases: ['ميم', 'ميمز'] },
+  loli: { label: '*😍 لولي جميلة 😍*', type: 'json', url: 'https://raw.githubusercontent.com/elrebelde21/The-LoliBot-MD2/main/src/randow/loli.json', aliases: ['لولي', 'كواي'] },
+  navidad: { label: '🎄 عيد الميلاد', type: 'json', url: 'https://raw.githubusercontent.com/elrebelde21/The-LoliBot-MD2/main/src/randow/navidad.json', aliases: ['كريسماس'] },
+  messi: { label: '*🇦🇷 ميسي الأسطورة*', type: 'json', url: 'https://raw.githubusercontent.com/elrebelde21/The-LoliBot-MD2/main/src/randow/messi.json', aliases: ['ميسي'] },
+  ronaldo: { label: '_*سيووووووو*_ ⚽', type: 'json', url: 'https://raw.githubusercontent.com/elrebelde21/The-LoliBot-MD2/main/src/randow/CristianoRonaldo.json', aliases: ['رونالدو', 'كريستيانو'] }
 }
 
+// 🧩 إنشاء خريطة لجميع الأوامر والمرادفات
 const aliasMap = {}
 for (const [key, item] of Object.entries(contenido)) {
   aliasMap[key.toLowerCase()] = item
-for (const alias of (item.aliases || [])) {
-aliasMap[alias.toLowerCase()] = item
-}}
+  for (const alias of (item.aliases || [])) {
+    aliasMap[alias.toLowerCase()] = item
+  }
+}
 
+// ⚙️ المعالج الرئيسي
 let handler = async (m, { conn, command }) => {
   try {
     const item = aliasMap[command.toLowerCase()]
-    if (!item) return m.reply('❌ Comando no reconocido.')
+    if (!item) return m.reply('❌ الأمر غير معروف، حاول كتابة اسم آخر.')
 
+    // 🧠 قسم الميمز
     if (item.isMeme) {
-      const url = await hispamemes.meme();
-conn.sendFile(m.chat, url, 'error.jpg', `😂🤣🤣`, m);   
+      const url = await hispamemes.meme()
+      conn.sendFile(m.chat, url, 'error.jpg', `😂🤣 ميم عشوائي`, m)
       return
     }
 
-if (item.type === 'json') {
-const res = await axios.get(item.url)
-const imgs = res.data
-const img = imgs[Math.floor(Math.random() * imgs.length)]
-await conn.sendMessage(m.chat, { image: { url: img }, caption: item.label }, { quoted: m })
-return
-}
+    // 🖼️ محتوى من ملفات JSON (قوائم صور جاهزة)
+    if (item.type === 'json') {
+      const res = await axios.get(item.url)
+      const imgs = res.data
+      const img = imgs[Math.floor(Math.random() * imgs.length)]
+      await conn.sendMessage(m.chat, { image: { url: img }, caption: item.label }, { quoted: m })
+      return
+    }
 
+    // 🌐 صور من API خارجي
     if (item.type === 'api') {
       let apiPath = `https://api.waifu.pics/sfw/${item.api}`
       try {
@@ -61,36 +68,42 @@ return
           apiPath = `https://api.waifu.pics/nsfw/${item.nsfwApi}`
         }
       } catch (err) {
-        console.error('❌ Error al verificar NSFW:', err)
+        console.error('❌ خطأ أثناء التحقق من إعداد NSFW:', err)
       }
+
       const res = await fetch(apiPath)
       const { url } = await res.json()
-      await conn.sendFile(m.chat, url, 'error.jpg', item.label, m);   
+      await conn.sendFile(m.chat, url, 'error.jpg', item.label, m)
       return
     }
 
+    // 🎞️ في حال كان المحتوى فيديو
     if (item.type === 'video') {
       const vid = item.vids[Math.floor(Math.random() * item.vids.length)]
-      await conn.sendFile(m.chat, vid, 'error.mp4', item.label, m);   
+      await conn.sendFile(m.chat, vid, 'error.mp4', item.label, m)
       return
     }
 
+    // 🖼️ في حال كانت صور ثابتة
     if (item.type === 'static') {
       const img = item.imgs[Math.floor(Math.random() * item.imgs.length)]
       await conn.sendMessage(m.chat, {
         image: { url: img },
-        caption: item.label }, { quoted: m })
+        caption: item.label
+      }, { quoted: m })
       return
     }
 
   } catch (e) {
-    console.error('[❌ ERROR IMG]', e)
-    m.reply('❌ Error al enviar imagen.')
+    console.error('[❌ خطأ في إرسال الصورة]', e)
+    m.reply('❌ حدث خطأ أثناء إرسال الصورة، حاول لاحقًا.')
   }
 }
+
+// 📜 دعم الأوامر العربية والإنجليزية
 handler.command = new RegExp(`^(${Object.keys(aliasMap).join('|')})$`, 'i')
 handler.help = Object.keys(aliasMap)
-handler.tags = ['randow']
+handler.tags = ['صور', 'عشوائي', 'fun']
 handler.register = true
 
 export default handler
