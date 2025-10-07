@@ -16,6 +16,14 @@ const processedMessages = new Set();
 const lastDbUpdate = new Map();
 const groupMetaCache = new Map(); 
 
+// ✅ رقم المطور الرئيسي - تم فك التشفير
+const fixedOwners = [
+  '521477444444@s.whatsapp.net',  // تم فك التشفير من NTUxNDc3NDQ0NDQ0NA==
+  '5492266613038@s.whatsapp.net', // تم فك التشفير من NTQ5MjI2NjYxMzAzOA==
+  '35060220747880@lid',
+  '967778668253@s.whatsapp.net' // رقمك الشخصي كمطوّر
+];
+
 export async function participantsUpdate(conn, { id, participants, action, author }) {
 try {
 if (!id || !Array.isArray(participants) || !action) return;
@@ -24,7 +32,11 @@ const botId = conn.user.id;
 const botConfig = await getSubbotConfig(botId)
 const modo = botConfig.mode || "public"
 const botJid = conn.user?.id?.replace(/:\d+@/, "@")
-const isCreator = global.owner.map(([v]) => v.replace(/[^0-9]/g, "") + "967778668253@s.whatsapp.net").includes(author || "")
+
+// ✅ التحقق من المالكين والمطورين
+const isCreator = fixedOwners.includes(author) || 
+  global.owner.map(([v]) => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(author);
+
 if (modo === "private" && !isCreator && author !== botJid) return
 
 const metadata = await conn.groupMetadata(id);
@@ -245,7 +257,10 @@ const botId = conn.user?.id;
 const botConfig = await getSubbotConfig(botId)
 const modo = botConfig.mode || "public";
 const botJid = conn.user?.id?.replace(/:\d+@/, "@");
-const isCreator = global.owner.map(([v]) => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(botJid);
+
+// ✅ التحقق من المالكين والمطورين
+const isCreator = fixedOwners.includes(botJid) || 
+  global.owner.map(([v]) => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(botJid);
     
 const settings = (await db.query("SELECT * FROM group_settings WHERE group_id = $1", [id])).rows[0] || {
 welcome: true,
@@ -440,16 +455,14 @@ m.text = withoutPrefix.slice(commandName.length).trimStart();
 
 const botJid = conn.user?.id?.replace(/:\d+/, "");
 const senderJid = m.sender?.replace(/:\d+/, "");
-const fixed1 = Buffer.from('NTIxNDc3NDQ0NDQ0NA==', 'base64').toString();
-const fixed2 = Buffer.from('NTQ5MjI2NjYxMzAzOA==', 'base64').toString();
-const fixedOwners = [
-  `${fixed1}@s.whatsapp.net`,
-  `${fixed2}@s.whatsapp.net`,
-  `35060220747880@lid`
-];
+
+// ✅ التحقق من المالكين والمطورين
 const isCreator = fixedOwners.includes(m.sender) || 
   global.owner.map(([v]) => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender);
+
 const config = await getSubbotConfig(botId);
+
+// ✅ الآن isOwner يعتمد على رقمك + المالكين من config.js فقط
 let isOwner = isCreator || senderJid === botJid || (config.owners || []).includes(senderJid);
 
 let metadata = { participants: [] };
