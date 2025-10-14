@@ -19,7 +19,7 @@ globalThis.info = {
 wm: "𝙇𝙤𝙡𝙞𝘽𝙤𝙩",
 vs: "2.0.0 (beta)",
 packname: "𝕃𝕆𝕃𝕀𝔹𝕆𝕋",
-author: "Owner: @elrebelde21\n• Dueña: @itschinita_official",
+author: "Dazai",
 apis: "https://api.delirius.store",
 apikey: "GataDios",
 fgmods: { url: 'https://api.fgmods.xyz/api', key: 'elrebelde21' },
