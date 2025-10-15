@@ -1,25 +1,17 @@
 const handler = async (m, { conn }) => {
-    // روابط صور عشوائية متنوعة
-    const randomImages = [
-        "https://files.catbox.moe/nz2421.jpg",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-    ];
+    // إرسال الصورة أولاً
+    await conn.sendMessage(m.chat, {
+        image: { 
+            url: "https://files.catbox.moe/nz2421.jpg" 
+        },
+        caption: "🎭 *بوت دزاري* 🎭"
+    });
 
-    // اختيار صورة عشوائية
-    const randomImage = randomImages[Math.floor(Math.random() * randomImages.length)];
-
+    // ثم إرسال القائمة
     let menu = `
 ✦ ──────────── ✦
       🏮 دَزَارِي 🏮
 ✦ ──────────── ✦
-
-👑 المطور: @967778668253
 
 𓂀 𓆩 ${new Date().toLocaleTimeString('ar-YE')} 𓆪
 𓂀 𓆩 ${new Date().toLocaleDateString('ar-YE')} 𓆪
@@ -111,27 +103,21 @@ const handler = async (m, { conn }) => {
 • ✦ 
 
 ✦ ──────────── ✦
-   🏮 𝟐𝟎𝟐𝟒 🏮
+     🎭 المُطَوِر 🎭
 ✦ ──────────── ✦
 
-🖼️ *الصورة العشوائية:* ${randomImage}
+𓍯𓂃𓂀 @967778668253
+𓍯𓂃𓂀 الَيَمَن
+𓍯𓂃𓂀 3.5.2
+
+✦ ──────────── ✦
+   🏮 𝟐𝟎𝟐𝟒 🏮
+✦ ──────────── ✦
 `.trim()
 
-    // إرسال الصورة والقائمة معاً
-    await conn.sendMessage(m.chat, {
-        image: { 
-            url: randomImage
-        },
-        caption: menu,
-        mentions: [m.sender, '967778668253@s.whatsapp.net']
-    })
-    
-    // إضافة تفاعل إيموجي للرسالة
     await conn.sendMessage(m.chat, { 
-        react: { 
-            text: "📜", 
-            key: m.key 
-        } 
+        text: menu, 
+        mentions: [m.sender, '967778668253@s.whatsapp.net']
     })
 }
 
