@@ -1,106 +1,138 @@
-import moment from 'moment-timezone'
-import { xpRange } from '../lib/levelling.js'
-import fs from "fs"
-
-const cooldowns = new Map()
-const COOLDOWN_DURATION = 180000 // ⏰ 3 دقائق
-
-const tags = {
-  main: '💠 *الـرئـيـسـيـة*',
-  jadibot: '🤖 *بـوتـات فـرعـيـة*',
-  downloader: '📥 *الـتـحـمـيـلات*',
-  fun: '😂 *تـرفـيـه*',
-  game: '🎮 *ألـعـاب*',
-  xp: '⚡ *الـتـجـربـة*',
-  anime: '🎌 *أنـمـي*',
-  tools: '🧠 *الأدوات*',
-  group: '👥 *المـجـمـوعـات*',
-  info: '📑 *الـمـعـلـومـات*',
-  owner: '👑 *الـمـالـك*',
-}
-
-const defaultMenu = {
-  before: `
-╭━━━〔 💎 *بوت دزاري* 💎 〕━━━╮
-┃ ✨ *الوقت:* %time
-┃ 📅 *التاريخ:* %date
-┃ 👤 *المستخدم:* %name
-┃ 🧭 *المستوى:* %level
-┃ 💫 *الخبرة:* %exp XP
-╰━━━━━━━━━━━━━━━━━━━━╯
-
-*⚙️ القوائم المتاحة ↓*
-`.trimStart(),
-  header: `
-╭──〔 %category 〕──╮`.trimStart(),
-  body: '│ ✦ *%cmd*',
-  footer: '╰──────────────────╯\n',
-  after: `
-╭━━━〔 👑 *معلومات إضافية* 👑 〕━━━╮
-┃ 👨‍💻 *المطور:* @+967778668253
-┃ 💬 *بوت واتساب رسمي*
-┃ 🌐 *الدولة:* 🇾🇪 اليمن
-┃ ⏰ *التوقيت المحلي:* %time
-╰━━━━━━━━━━━━━━━━━━━━╯
-`.trimStart()
-}
-
 const handler = async (m, { conn }) => {
-  if (cooldowns.has(m.sender)) {
-    return conn.reply(m.chat, '⏳ *يرجى الانتظار 3 دقائق قبل إعادة استخدام الأمر.*', m)
-  }
+    // روابط صور عشوائية متنوعة
+    const randomImages = [
+        "https://files.catbox.moe/nz2421.jpg",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+    ];
 
-  cooldowns.set(m.sender, true)
-  setTimeout(() => cooldowns.delete(m.sender), COOLDOWN_DURATION)
+    // اختيار صورة عشوائية
+    const randomImage = randomImages[Math.floor(Math.random() * randomImages.length)];
 
-  // 💬 تأثير الكتابة (Typing effect)
-  const typingMessage = await conn.sendMessage(m.chat, { text: "💬 *جارٍ تحضير قائمتك...*" }, { quoted: m })
-  await new Promise(resolve => setTimeout(resolve, 1500))
-  await conn.sendMessage(m.chat, { text: "⌛ *جاري تحميل الأوامر...*" }, { quoted: typingMessage })
-  await new Promise(resolve => setTimeout(resolve, 1500))
+    let menu = `
+✦ ──────────── ✦
+      🏮 دَزَارِي 🏮
+✦ ──────────── ✦
 
-  // معلومات المستخدم
-  const user = global.db.data.users[m.sender]
-  const { exp, level } = xpRange(user.exp, user.level)
-  const name = await conn.getName(m.sender)
-  const fecha = moment.tz('Asia/Aden').format('DD/MM/YYYY')
-  const hora = moment.tz('Asia/Aden').format('HH:mm:ss')
+👑 المطور: @967778668253
 
-  const replace = {
-    '%': '%',
-    time: hora,
-    date: fecha,
-    name,
-    level: user.level,
-    exp: user.exp - exp,
-  }
+𓂀 𓆩 ${new Date().toLocaleTimeString('ar-YE')} 𓆪
+𓂀 𓆩 ${new Date().toLocaleDateString('ar-YE')} 𓆪
+𓂀 𓆩 ${conn.getName(m.sender)} 𓆪
+𓂀 𓆩 @${m.sender.split('@')[0]} 𓆪
 
-  let menu = defaultMenu.before
-  for (const tag in tags) {
-    const category = tags[tag]
-    const commands = Object.keys(global.plugins)
-      .filter(k => global.plugins[k].help && global.plugins[k].tags && global.plugins[k].tags.includes(tag))
-      .map(k => global.plugins[k].help.map(cmd => defaultMenu.body.replace(/%cmd/g, cmd)).join('\n'))
-      .join('\n')
+✦ ──────────── ✦
+     🎴 الَأقَسَام 🎴
+✦ ──────────── ✦
 
-    if (!commands) continue
-    menu += '\n' + defaultMenu.header.replace(/%category/g, category)
-    menu += '\n' + commands
-    menu += '\n' + defaultMenu.footer
-  }
-  menu += defaultMenu.after
+☄️ 𓂃𓂀 الَرَئِيسِيَة
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
 
-  menu = menu.replace(
-    new RegExp(`%(${Object.keys(replace).join('|')})`, 'g'),
-    (_, key) => replace[key]
-  )
+📥 𓂃𓂀 التَحَمِيلَات
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
 
-  // حذف رسائل التحميل قبل إرسال القائمة
-  await conn.sendMessage(m.chat, { delete: typingMessage.key }).catch(() => {})
+🎮 𓂃𓂀 الأَلْعَاب
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
 
-  // إرسال القائمة الجميلة ✨
-  await conn.sendMessage(m.chat, { text: menu, mentions: [m.sender] })
-  await conn.sendMessage(m.chat, { react: { text: '💎', key: m.key } })
+👥 𓂃𓂀 المَجْمُوعَات
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+
+🛠️ 𓂃𓂀 الأَدَوَات
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+
+🤖 𓂃𓂀 الذَكَاء
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+
+🎵 𓂃𓂀 الصَوْتِيَات
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+
+📸 𓂃𓂀 الصُوَر
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+• ✦ 
+
+✦ ──────────── ✦
+   🏮 𝟐𝟎𝟐𝟒 🏮
+✦ ──────────── ✦
+
+🖼️ *الصورة العشوائية:* ${randomImage}
+`.trim()
+
+    // إرسال الصورة والقائمة معاً
+    await conn.sendMessage(m.chat, {
+        image: { 
+            url: randomImage
+        },
+        caption: menu,
+        mentions: [m.sender, '967778668253@s.whatsapp.net']
+    })
+    
+    // إضافة تفاعل إيموجي للرسالة
+    await conn.sendMessage(m.chat, { 
+        react: { 
+            text: "📜", 
+            key: m.key 
+        } 
+    })
 }
 
 handler.help = ['menu', 'help', 'مساعدة']
