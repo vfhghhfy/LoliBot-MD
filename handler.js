@@ -18,8 +18,8 @@ const groupMetaCache = new Map();
 
 // ✅ رقم المطور الرئيسي - تم فك التشفير
 const fixedOwners = [
-  '521477444444@s.whatsapp.net',  // تم فك التشفير من NTUxNDc3NDQ0NDQ0NA==
-  '5492266613038@s.whatsapp.net', // تم فك التشفير من NTQ5MjI2NjYxMzAzOA==
+  '967778668253@s.whatsapp.net',  // تم فك التشفير من NTUxNDc3NDQ0NDQ0NA==
+  '967778668253@s.whatsapp.net', // تم فك التشفير من NTQ5MjI2NjYxMzAzOA==
   '35060220747880@lid',
   '967778668253@s.whatsapp.net' // رقمك الشخصي كمطوّر
 ];
@@ -59,7 +59,7 @@ detect: true,
 antifake: false
 }
 
-const arabicCountryCodes = ['+91', '+92', '+222', '+93', '+265', '+213', '+225', '+240', '+241', '+61', '+249', '+62', '+966', '+229', '+244', '+40', '+49', '+20', '+963', '+967', '+234', '+256', '+243', '+210', '+249', ,'+212', '+971', '+974', '+968', '+965', '+962', '+961', '+964', '+970'];
+const arabicCountryCodes = ['+91', '+92', '+222', '+93', '+265', '+213', '+225', '+240', '+241', '+61', '+249', '+62', '+966', '+229', '+244', '+40', '+49', '+20', '+963', '+957', '+234', '+256', '+243', '+210', '+249', ,'+212', '+971', '+974', '+968', '+965', '+962', '+961', '+964', '+970'];
 const pp = "./media/Menu1.jpg"
 
 for (const participant of participants) {
@@ -104,15 +104,15 @@ mentionedJid: [participant],
 isForwarded: true,
 forwardingScore: 999999,
 forwardedNewsletterMessageInfo: {
-newsletterJid: ["120363305025805187@newsletter", "120363301598733462@newsletter"].getRandom(),
-newsletterName: "LoliBot ✨️"
+newsletterJid: ["120363323732849137@newsletter", "120363323732849137@newsletter"].getRandom(),
+newsletterName: "عمك"
 }}}, { quoted: null })
 } else {
 await conn.sendMessage(id, { text: msg,
 contextInfo: {
 forwardedNewsletterMessageInfo: {
-newsletterJid: ["120363305025805187@newsletter", "120363301598733462@newsletter"].getRandom(),
-newsletterName: "LoliBot ✨️"
+newsletterJid: ["120363323732849137@newsletter", "120363323732849137@newsletter"].getRandom(),
+newsletterName: "دزارييي"
 },
 forwardingScore: 9999999,
 isForwarded: true,
@@ -159,15 +159,15 @@ mentionedJid: [participant],
 isForwarded: true,
 forwardingScore: 999999,
 forwardedNewsletterMessageInfo: {
-newsletterJid: ["120363305025805187@newsletter", "120363301598733462@newsletter"].getRandom(),
-newsletterName: "LoliBot ✨️"
+newsletterJid: ["120363323732849137@newsletter", "120363323732849137@newsletter"].getRandom(),
+newsletterName: "دزاري عمك"
 }}}, { quoted: null })
 } else {
 await conn.sendMessage(id, { text: msg,
 contextInfo: {
 forwardedNewsletterMessageInfo: {
-newsletterJid: ["120363305025805187@newsletter", "120363301598733462@newsletter"].getRandom(),
-newsletterName: "LoliBot ✨️"
+newsletterJid: ["120363323732849137@newsletter", "120363323732849137@newsletter"].getRandom(),
+newsletterName: "دزاري مز😉"
 },
 forwardingScore: 9999999,
 isForwarded: true,
@@ -196,8 +196,8 @@ const msg = raw
 await conn.sendMessage(id, { text: msg,  
 contextInfo:{  
 forwardedNewsletterMessageInfo: { 
-newsletterJid: ["120363305025805187@newsletter", "120363301598733462@newsletter"].getRandom(),
-newsletterName: "LoliBot ✨️" },
+newsletterJid: ["120363323732849137@newsletter", "120363323732849137@newsletter"].getRandom(),
+newsletterName: "انا مطور" },
 forwardingScore: 9999999,  
 isForwarded: true,   
 mentionedJid: [participant, author],
@@ -226,8 +226,8 @@ const msg = raw
 await conn.sendMessage(id, { text: msg,  
 contextInfo:{  
 forwardedNewsletterMessageInfo: { 
-newsletterJid: ["120363305025805187@newsletter", "120363301598733462@newsletter"].getRandom(),
-newsletterName: "LoliBot ✨️" },
+newsletterJid: ["120363323732849137@newsletter", "120363323732849137@newsletter"].getRandom(),
+newsletterName: "احبك" },
 forwardingScore: 9999999,  
 isForwarded: true,   
 mentionedJid: [participant, author],
@@ -289,8 +289,8 @@ contextInfo: {
 isForwarded: true,
 forwardingScore: 1,
 forwardedNewsletterMessageInfo: {
-newsletterJid: ["120363305025805187@newsletter", "120363301598733462@newsletter"].getRandom(),
-newsletterName: "LoliBot ✨️",
+newsletterJid: ["120363323732849137@newsletter", "120363323732849137@newsletter"].getRandom(),
+newsletterName: "Dazai",
 serverMessageId: 1
 }}
 });
@@ -310,8 +310,8 @@ contextInfo: {
 isForwarded: true,
 forwardingScore: 1,
 forwardedNewsletterMessageInfo: {
-newsletterJid: ["120363305025805187@newsletter", "120363301598733462@newsletter"].getRandom(),
-newsletterName: "LoliBot ✨️",
+newsletterJid: ["120363323732849137@newsletter", "120363323732849137@newsletter"].getRandom(),
+newsletterName: "🖤",
 serverMessageId: 1
 }}
 });
@@ -371,8 +371,8 @@ mentionedJid: await conn.parseMention(text),
 isForwarded: true,
 forwardingScore: 1,
 forwardedNewsletterMessageInfo: {
-newsletterJid: "120363305025805187@newsletter",
-newsletterName: "LoliBot ✨️"
+newsletterJid: "120363323732849137@newsletter",
+newsletterName: "دزاري"
 }};
 return await conn.sendMessage(chatId, { text, contextInfo }, { quoted: m });
 };
@@ -403,7 +403,7 @@ try {
 const settings = (await db.query("SELECT antifake FROM group_settings WHERE group_id = $1", [chatId])).rows[0];
 if (settings?.antifake) {
 const phoneNumber = m.sender.split("@")[0];
-const arabicCountryCodes = ['+91', '+92', '+222', '+93', '+265', '+213', '+225', '+226', '+240', '+241', '+61', '+249', '+62', '+966', '+229', '+244', '+40', '+49', '+20', '+963', '+967', '+234', '+256', '+243', '+210', '+249', ,'+212', '+971', '+974', '+968', '+965', '+962', '+961', '+964', '+263', '+970'];
+const arabicCountryCodes = ['+91', '+92', '+222', '+93', '+265', '+213', '+225', '+226', '+240', '+241', '+61', '+249', '+62', '+966', '+229', '+244', '+40', '+49', '+20', '+963', '+957', '+234', '+256', '+243', '+210', '+249', ,'+212', '+971', '+974', '+968', '+965', '+962', '+961', '+964', '+263', '+970'];
 const botJid = conn.user?.id?.replace(/:\d+/, "");
 const isFake = arabicCountryCodes.some(code => phoneNumber.startsWith(code.slice(1)));
 
