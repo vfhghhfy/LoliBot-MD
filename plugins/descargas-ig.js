@@ -2,112 +2,127 @@ import fetch from 'node-fetch';
 import axios from 'axios';
 import { instagramdl } from '@bochilteam/scraper';
 import { fileTypeFromBuffer } from 'file-type';
-const userMessages = new Map();
+
 const userRequests = {};
 
 const handler = async (m, { conn, args, command, usedPrefix }) => {
-  const datas = global;
-  if (!args[0]) return m.reply(`⚠️ يرجى إدخال رابط فيديو إنستغرام مع الأمر.\n\nمثال: *${usedPrefix + command}* https://www.instagram.com/p/C60xXk3J-sb/?igsh=YzljYTk1ODg3Zg==`) 
+  if (!args[0]) return m.reply(`⚠️ يرجى إدخال رابط فيديو إنستغرام.\n\nمثال: *${usedPrefix + command}* https://www.instagram.com/p/C60xXk3J-sb/`);
   
-  if (userRequests[m.sender]) return await conn.reply(m.chat, `يا @${m.sender.split('@')[0]}, اهدأ، أنت بالفعل تقوم بتحميل شيء ما 😒\nانتظر حتى تنتهي طلبك الحالي قبل تقديم طلب آخر...`, m)
+  if (userRequests[m.sender]) return await conn.reply(m.chat, `⏳ انتظر حتى ينتهي التحميل الحالي...`, m);
   
   userRequests[m.sender] = true;
   await m.react('⌛');
-  
+
   try {
+    const url = args[0];
+    
+    // محاولات التحميل من مصادر مختلفة
     const downloadAttempts = [
       async () => {
-        const res = await fetch(`https://api.siputzx.my.id/api/d/igdl?url=${args[0]}`);
+        const res = await fetch(`https://api.siputzx.my.id/api/d/igdl?url=${url}`);
         const data = await res.json();
-        const fileType = data.data[0].url.includes('.webp') ? 'image' : 'video';
-        return { 
-          url: data.data[0].url, 
-          type: fileType, 
-          caption: fileType === 'image' ? '_*ها هي صورتك من إنستغرام*_' : '*ها هو الفيديو من إنستغرام*'
-        };
+        return data.data?.[0]?.url;
       },
       async () => {
-        const res = await fetch(`${info.fgmods.url}/downloader/igdl?url=${args[0]}&apikey=${info.fgmods.key}`);
+        const res = await fetch(`https://api.fgmods.my.id/api/downloader/igdl?url=${url}&apikey=fgmods`);
         const data = await res.json();
-        const result = data.result[0];
-        const fileType = result.url.endsWith('.jpg') || result.url.endsWith('.png') ? 'image' : 'video';
-        return { 
-          url: result.url, 
-          type: fileType, 
-          caption: fileType === 'image' ? '_*ها هي صورتك من إنستغرام*_' : '*ها هو الفيديو من إنستغرام*'
-        };
+        return data.result?.[0]?.url;
       },
       async () => {
-        const apiUrl = `${info.apis}/download/instagram?url=${encodeURIComponent(args[0])}`;
-        const apiResponse = await fetch(apiUrl);
-        const delius = await apiResponse.json();
-        return { 
-          url: delius.data[0].url, 
-          type: delius.data[0].type, 
-          caption: delius.data[0].type === 'image' ? '_*ها هي صورتك من إنستغرام*_' : '*ها هو الفيديو من إنستغرام*'
-        };
+        const result = await instagramdl(url);
+        return result[0]?.url;
       },
       async () => {
-        const resultssss = await instagramdl(args[0]);
-        const shortUrl3 = await (await fetch(`https://tinyurl.com/api-create.php?url=${args[0]}`)).text();
-        const txt4 = `_${shortUrl3}_`.trim();
-        return { 
-          url: resultssss[0].url, 
-          type: resultssss[0].url.endsWith('.mp4') ? 'video' : 'image', 
-          caption: txt4 
-        };
-      },
+        const res = await fetch(`https://api.erdwpe.com/api/download/instagram?url=${encodeURIComponent(url)}`);
+        const data = await res.json();
+        return data.data?.[0]?.url;
+      }
     ];
 
-    let fileData = null;
+    let mediaUrl = null;
+    
+    // تجربة جميع المصادر
     for (const attempt of downloadAttempts) {
       try {
-        fileData = await attempt();
-        if (fileData) break; 
+        mediaUrl = await attempt();
+        if (mediaUrl) {
+          console.log(`✅ تم العثور على الرابط من: ${attempt.name}`);
+          break;
+        }
       } catch (err) {
-        console.error(`خطأ في المحاولة: ${err.message}`);
-        continue; 
+        console.log(`❌ فشل المصدر: ${err.message}`);
+        continue;
       }
     }
 
-    if (!fileData) throw new Error('تعذر تحميل الملف من أي من واجهات البرمجة');
-    
-    const fileName = fileData.type === 'image' ? 'انستغرام.jpg' : 'انستغرام.mp4';
-    await conn.sendFile(m.chat, fileData.url, fileName, fileData.caption, m);
+    if (!mediaUrl) throw new Error('❌ تعذر تحميل الفيديو من أي مصدر');
+
+    // تحديد نوع الملف
+    const isVideo = mediaUrl.includes('.mp4') || mediaUrl.includes('.mov') || mediaUrl.includes('.webm');
+    const fileName = isVideo ? 'انستغرام.mp4' : 'انستغرام.jpg';
+    const caption = isVideo ? '🎥 *فيديو انستغرام*' : '🖼️ *صورة انستغرام*';
+
+    // إرسال الملف مباشرة
+    await conn.sendFile(m.chat, mediaUrl, fileName, caption, m);
     await m.react('✅');
-  } catch (e) {
+
+  } catch (error) {
+    console.error(error);
+    await m.reply(`❌ خطأ في التحميل: ${error.message}`);
     await m.react('❌');
-    console.log(e);
-    handler.limit = 0;
   } finally {
     delete userRequests[m.sender];
   }
 };
 
+// الأمر التلقائي عند إرسال رابط انستجرام
+const linkHandler = async (m, { conn }) => {
+  const text = m.text || '';
+  
+  // كشف روابط انستجرام تلقائياً
+  const instagramRegex = /https?:\/\/(www\.)?instagram\.com\/(p|reel|stories)\/[^\s]+/gi;
+  const matches = text.match(instagramRegex);
+  
+  if (matches && matches.length > 0 && !m.text.startsWith('!') && !m.text.startsWith('/') && !m.text.startsWith('.')) {
+    const url = matches[0];
+    
+    if (userRequests[m.sender]) return;
+    userRequests[m.sender] = true;
+    
+    await m.react('⌛');
+    
+    try {
+      // استخدام نفس منطق التحميل
+      const res = await fetch(`https://api.siputzx.my.id/api/d/igdl?url=${url}`);
+      const data = await res.json();
+      const mediaUrl = data.data?.[0]?.url;
+      
+      if (mediaUrl) {
+        const isVideo = mediaUrl.includes('.mp4');
+        const fileName = isVideo ? 'انستغرام.mp4' : 'انستغرام.jpg';
+        const caption = isVideo ? '🎥 *فيديو انستغرام*' : '🖼️ *صورة انستغرام*';
+        
+        await conn.sendFile(m.chat, mediaUrl, fileName, caption, m);
+        await m.react('✅');
+      } else {
+        throw new Error('لم يتم العثور على وسائط');
+      }
+    } catch (error) {
+      await m.reply('❌ تعذر تحميل محتوى انستجرام تلقائياً. جرب استخدام الأمر !انستغرام');
+      await m.react('❌');
+    } finally {
+      delete userRequests[m.sender];
+    }
+  }
+};
+
+// تسجيل المعالجين
 handler.help = ['انستغرام *<رابط>*'];
 handler.tags = ['تحميل'];
 handler.command = /^(instagramdl|instagram|igdl|ig|انستغرام|انستا|انستقرام)$/i;
 handler.limit = 1;
 handler.register = true;
 
+// تصدير المعالج التلقائي
+export { linkHandler };
 export default handler;
-
-const getBuffer = async (url, options) => {
-  options = options || {};
-  const res = await axios({ 
-    method: 'get', 
-    url, 
-    headers: { 
-      'DNT': 1, 
-      'Upgrade-Insecure-Request': 1 
-    }, 
-    ...options, 
-    responseType: 'arraybuffer' 
-  });
-  const buffer = Buffer.from(res.data, 'binary');
-  const detectedType = await fileTypeFromBuffer(buffer);
-  if (!detectedType || (detectedType.mime !== 'image/jpeg' && detectedType.mime !== 'image/png' && detectedType.mime !== 'video/mp4')) {
-    return null;
-  }
-  return { buffer, detectedType };
-};
